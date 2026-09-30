@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { demoSite } from "../../lib/preview/site";
 
@@ -9,15 +9,21 @@ export default function MarketingHome(){
   const heroSite=useMemo(()=>stripScript(demoSite("/",false)),[]);
   const monday=useMemo(()=>stripScript(demoSite("/",false,"A table worth\nstaying for.")),[]);
   const saturday=useMemo(()=>stripScript(demoSite("/",true,"A longer lunch.\nA little more time.")),[]);
+  const [menuOpen,setMenuOpen]=useState(false);
+  const menuButton=useRef<HTMLButtonElement|null>(null);
+  const mobileMenu=useRef<HTMLDivElement|null>(null);
   const root=useRef<HTMLElement|null>(null);
 
+  useEffect(()=>{if(!menuOpen)return;mobileMenu.current?.querySelector<HTMLAnchorElement>("a")?.focus();const close=(event:KeyboardEvent)=>{if(event.key==="Escape"){setMenuOpen(false);menuButton.current?.focus();}};const outside=(event:PointerEvent)=>{if(!mobileMenu.current?.contains(event.target as Node)&&!menuButton.current?.contains(event.target as Node))setMenuOpen(false);};const query=matchMedia("(min-width:761px)");const resize=()=>{if(query.matches)setMenuOpen(false);};document.addEventListener("keydown",close);document.addEventListener("pointerdown",outside);query.addEventListener("change",resize);return()=>{document.removeEventListener("keydown",close);document.removeEventListener("pointerdown",outside);query.removeEventListener("change",resize);};},[menuOpen]);
   useEffect(()=>{
     let cancelled=false;
     async function boot(){
+      if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
       const [{default:gsap},{ScrollTrigger},{default:Lenis}]=await Promise.all([
         import("gsap"), import("gsap/ScrollTrigger"), import("lenis")
       ]);
       if(cancelled || matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+      root.current?.classList.add("mk-motion");
       gsap.registerPlugin(ScrollTrigger);
       const lenis=new Lenis({lerp:.09,smoothWheel:true,wheelMultiplier:.88,anchors:true,autoRaf:false});
       lenis.on("scroll",ScrollTrigger.update);
@@ -52,17 +58,20 @@ export default function MarketingHome(){
         gsap.from(".mk-price-line",{clipPath:"inset(0 100% 0 0)",duration:1.05,ease:"power4.inOut",scrollTrigger:{trigger:".mk-pricing",start:"top 72%"}});
         gsap.from(".mk-final-grid>*",{y:32,opacity:0,stagger:.08,duration:.9,ease:"power4.out",scrollTrigger:{trigger:".mk-final",start:"top 70%"}});
       },root);
-      addEventListener("load",()=>ScrollTrigger.refresh(true),{once:true});
-      return ()=>{ctx.revert();lenis.destroy();gsap.ticker.remove(tick);};
+      const refresh=()=>{if(!cancelled)ScrollTrigger.refresh(true);};
+      addEventListener("load",refresh,{once:true});
+      void document.fonts.ready.then(refresh);
+      refresh();
+      return ()=>{removeEventListener("load",refresh);ctx.revert();lenis.destroy();gsap.ticker.remove(tick);root.current?.classList.remove("mk-motion");};
     }
     let cleanup:(()=>void)|undefined;
-    boot().then((c)=>{ if(cancelled)c?.(); else cleanup=c; }).catch(()=>{ /* The complete page remains usable without motion. */ });
+    boot().then((c)=>{ if(cancelled)c?.(); else cleanup=c; }).catch(()=>{root.current?.classList.remove("mk-motion"); /* The complete page remains usable without motion. */ });
     return()=>{cancelled=true;cleanup?.();};
   },[]);
 
   return <main ref={root} className="mk-site" id="top">
     <a className="skip-link" href="#main-content">Skip to content</a>
-    <nav className="mk-nav" aria-label="Primary navigation"><a className="mk-wordmark" href="#top">fourthform</a><div className="mk-nav-links"><a href="#work">Work</a><a href="#process">Process</a><a href="#portal">Portal</a><a href="#states">States</a><a href="https://fourthform-client-portal.vercel.app/">Client portal ↗</a><a href="#pricing">Pricing</a></div><a className="mk-button mk-button-dark" href="/preview/start">Start a site</a></nav>
+    <nav className="mk-nav" aria-label="Primary navigation"><a className="mk-wordmark" href="#top">fourthform</a><div className="mk-nav-links"><a href="#work">Work</a><a href="#process">Process</a><a href="#portal">Portal</a><a href="#states">States</a><a href="https://fourthform-client-portal.vercel.app/">Client portal ↗</a><a href="#pricing">Pricing</a></div><button ref={menuButton} className="mk-menu-toggle" type="button" aria-controls="mk-mobile-menu" aria-expanded={menuOpen} aria-label={menuOpen?"Close navigation":"Open navigation"} onClick={()=>setMenuOpen(open=>!open)}>{menuOpen?"Close":"Menu"}</button><a className="mk-button mk-button-dark" href="/preview/start">Start a site</a><div ref={mobileMenu} className="mk-mobile-menu" id="mk-mobile-menu" hidden={!menuOpen}>{[["#work","Work"],["#process","Process"],["#portal","Portal preview"],["#states","States"],["#pricing","Pricing"],["#questions","Questions"],["https://fourthform-client-portal.vercel.app/","Client portal ↗"]].map(([href,label])=><a key={href} href={href} onClick={()=>{setMenuOpen(false);menuButton.current?.focus();}}>{label}</a>)}</div></nav>
 
     <section className="mk-hero-wrap" id="main-content" tabIndex={-1}><div className="mk-hero"><div className="mk-container mk-hero-grid"><div className="mk-hero-copy"><h1 className="mk-display"><span className="mk-hero-line"><span>Websites,</span></span><span className="mk-hero-line"><span><em>brought into form.</em></span></span></h1><p className="mk-body">From the first direction to the live site, Fourthform gives you one place to shape, review, launch and keep your website current.</p><p className="mk-included">3 revision rounds included</p><div className="mk-hero-actions"><a className="mk-button mk-button-dark" href="/preview/start">Start a site</a><a className="mk-text-link" href="#portal">Explore the portal ↘</a></div></div><div className="mk-hero-stage"><div className="mk-hero-site"><iframe title="Mori House website example" sandbox="allow-same-origin" srcDoc={heroSite}/></div><span className="mk-stage-caption">One website, taking form.</span></div></div></div></section>
 

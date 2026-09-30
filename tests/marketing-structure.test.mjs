@@ -10,3 +10,5 @@ const home=compile('components/marketing/MarketingHome.tsx',{'../../lib/preview/
 const html=renderToStaticMarkup(React.createElement(home));
 test('marketing has one focusable skip target and six native FAQ disclosures',()=>{assert.equal((html.match(/Skip to content/g)||[]).length,1);assert.match(html,/id="main-content" tabindex="-1"/);assert.equal((html.match(/<details>/g)||[]).length,6);assert.equal((html.match(/<summary>/g)||[]).length,6);});
 test('marketing retains onboarding and same-origin embedded preview routes',()=>{assert.match(html,/href="\/preview\/start"/);assert.match(html,/href="\/preview\/start\?package=first"/);assert.match(html,/src="\/portal-preview\/index.html"/);assert.match(html,/A\$200/);assert.match(html,/A\$1,300/);});
+
+test('marketing includes an accessible closed mobile navigation',()=>{assert.match(html,/aria-controls="mk-mobile-menu" aria-expanded="false"/);assert.match(html,/id="mk-mobile-menu" hidden=""/);assert.match(html,/href="#questions"/);});
