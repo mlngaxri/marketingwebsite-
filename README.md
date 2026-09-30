@@ -24,3 +24,7 @@ The primary Client portal link uses https://fourthform-client-portal.vercel.app/
 Onboarding and checkout are illustrations. They do not create real accounts or charge cards. Password input is never persisted. The embedded portal uses example data and verified device storage, with no real CMS, SEO crawler, analytics or payment integration. Production service code from the larger source pack is intentionally outside these preview repositories.
 
 Local fonts, reduced-motion handling, image loading, responsive screens, keyboard dialogs and preview journey checks are included. See `docs/LOCAL_ACCEPTANCE.md` for the tested scope.
+
+## Continuous validation
+
+GitHub Actions compiles the production site, checks server-rendered structure and runs preview/detail browser journeys. A run uploads screenshot and result evidence. Run `npm run test:structure` for the server-rendered structural checks locally.

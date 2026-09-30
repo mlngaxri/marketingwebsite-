@@ -141,6 +141,23 @@ await check('Operational drafts recover and Reset clears all sample settings',as
  assert.match(await page.locator('[data-field="seoTitle"]').inputValue(),/Mori House/);
 });
 
+await check('CMS page drafts do not publish on navigation',async()=>{
+ await page.locator('#leftRail [data-view="pages"]').click();
+ await page.locator('[data-view-panel="pages"] [data-page="Home"]').click();
+ await page.locator('[data-field="heading"]').fill('An unsaved Home heading');
+ await page.locator('[data-view-panel="pages"] [data-page="Menu"]').click();
+ await page.locator('#leftRail [data-stage="review"]').click();
+ await page.locator('.canvasbar [data-page="Home"]').click();
+ assert.notEqual(await page.locator('.mori-home-hero h1').textContent(),'An unsaved Home heading');
+ await page.locator('#leftRail [data-view="pages"]').click();
+ await page.locator('[data-view-panel="pages"] [data-page="Home"]').click();
+ assert.equal(await page.locator('[data-field="heading"]').inputValue(),'An unsaved Home heading');
+});
+await check('Analytics sources match the selected visitors total',async()=>{
+ await page.locator('#leftRail [data-view="analytics"]').click();
+ for(const range of ['0','1','2']){await page.locator(`[data-range="${range}"]`).click();const total=Number((await page.locator('[data-metric]').first().textContent()).replaceAll(',',''));const sum=await page.locator('[data-report-kind="sources"]').evaluate(el=>[...el.closest('table').querySelectorAll('tbody tr')].reduce((n,row)=>n+Number(row.lastElementChild.textContent.replaceAll(',','')),0));assert.equal(sum,total);}
+});
+
 await check('No empty named buttons in active portal surface',async()=>{
  const unnamed=await page.locator('button:visible').evaluateAll(es=>es.filter(e=>!e.textContent.trim()&&!e.getAttribute('aria-label')&&!e.getAttribute('title')).length);
  assert.equal(unnamed,0);
