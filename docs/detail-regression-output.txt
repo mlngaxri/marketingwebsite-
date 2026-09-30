@@ -1,7 +1,9 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> fourthform-marketing@0.1.0 test:browser
+> node tests/browser/preview-check.mjs
+
 {
-  "checkedAt": "2026-09-30T11:10:29.519Z",
-  "base": "http://127.0.0.1:3003",
-  "portal": "http://127.0.0.1:3003/portal-preview/index.html",
   "checks": [
     {
       "name": "Marketing reflows at five widths",
