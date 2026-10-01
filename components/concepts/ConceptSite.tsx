@@ -1,4 +1,5 @@
 "use client";
+import {startHref} from "../../lib/customer-flow";
 import {useEffect,useRef,useState,type CSSProperties} from 'react';
 import Link from 'next/link';
 import type {Concept} from '../../lib/portfolio/concepts';
@@ -10,7 +11,7 @@ export default function ConceptSite({concept:c}:{concept:Concept}){
  useEffect(()=>{const media=matchMedia('(prefers-reduced-motion: reduce)');if(media.matches)return;const nodes=document.querySelectorAll('.concept-reveal');const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-in-view');observer.unobserve(entry.target);}});},{threshold:.08});nodes.forEach(node=>observer.observe(node));return()=>observer.disconnect();},[]);
  function close(){dialog.current?.close();trigger.current?.focus();}
  return <main className={`concept-site concept-${c.layout}`} style={style} data-concept={c.id}>
-  <div className="concept-studio-bar"><Link href="/work" target="_top" className="concept-studio-brand"><span className="ff-mark" aria-hidden="true"/>fourthform</Link><span>Studio concept · Fictional business</span><Link href={`/preview/start?reference=${c.id}`} target="_top">Use this direction ↗</Link></div>
+  <div className="concept-studio-bar"><Link href="/work" target="_top" className="concept-studio-brand"><span className="ff-mark" aria-hidden="true"/>fourthform</Link><span>Studio concept · Fictional business</span><Link href={startHref({reference:c.id})} target="_top">Use this direction ↗</Link></div>
   <a className="skip-link" href="#concept-content">Skip to content</a>
   <nav className="concept-nav" aria-label={`${c.brand} navigation`}><a href="#concept-content" className="concept-brand">{c.brand}<span aria-hidden="true">.</span></a><div><a href="#explore">Explore</a><a href="#approach">Approach</a><a href="#contact">Get in touch ↗</a></div></nav>
   <section className="concept-hero" id="concept-content" tabIndex={-1}>

@@ -28,3 +28,7 @@ Local fonts, reduced-motion handling, image loading, responsive screens, keyboar
 ## Continuous validation
 
 GitHub Actions compiles the production site, checks server-rendered structure and runs preview/detail browser journeys. A run uploads screenshot and result evidence. Run `npm run test:structure` for the server-rendered structural checks locally.
+
+## Connected customer funnel
+
+The portal repository now contains the real authenticated backend and website CMS. This marketing repository preserves the public demo spaces. `NEXT_PUBLIC_CONNECTED_PORTAL=true` switches start buttons to `/start`, which forwards valid design references and package selections to `NEXT_PUBLIC_CLIENT_PORTAL_URL`. Leave the switch false until the connected portal completes hosted provider acceptance. See the portal repository's `docs/ACTIVATION.md` for configuration and release steps.
