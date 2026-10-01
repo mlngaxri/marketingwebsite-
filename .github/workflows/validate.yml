@@ -40,6 +40,7 @@ jobs:
       - run: node tests/browser/details-check.mjs
       - run: node tests/browser/review-check.mjs
       - run: node tests/browser/integration-check.mjs
+      - run: node tests/browser/audit-check.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
