@@ -50,4 +50,16 @@ await check('Initial Direction confirmation clearly explains the revision bounda
  await p.locator('#commSendCancel').click();
  assert.equal(await p.evaluate(()=>ffCommunicationFields().initialDirection.sent),false);
 });
+
+await check('Editorial line breaks stay readable in content fields and summaries',async p=>{
+ await p.goto(portal+'?view=pages');
+ assert.equal(await p.locator('[data-field="heading"]').inputValue(),'Dinner, at its own pace.');
+ await p.locator('[data-field="heading"]').fill('Dinner, at a new pace.');
+ await p.locator('[data-ops="save-cms"]').click();
+ await p.locator('#leftRail [data-view="states"]').click();
+ await p.locator('[data-state-preview="base"]').click();
+ assert.equal(await p.locator('[data-view-panel="states"] [data-mini-heading]').textContent(),'Dinner, at a new pace.');
+ await p.reload();await p.locator('#leftRail [data-view="pages"]').click();
+ assert.equal(await p.locator('[data-field="heading"]').inputValue(),'Dinner, at a new pace.');
+});
 await writeFile('docs/preview-evidence/content-results.json',JSON.stringify({results,uncaughtErrors:errors},null,2));console.log(JSON.stringify({results,uncaughtErrors:errors},null,2));await browser.close();if(results.some(r=>r.result==='fail')||errors.length)process.exitCode=1;
