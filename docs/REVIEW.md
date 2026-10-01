@@ -16,4 +16,4 @@ This remains an interactive product preview with example data and local browser 
 
 Direct website edits now survive CMS history, navigation and reload. Restored and cross-tab snapshots paint their incoming content before capture. CMS saving writes one consistent page-and-fields snapshot and rolls it back on failure. Consent settings persist, sample integrations can disconnect/reconnect, and launch checks use current form/search readiness. Paid receipts and three-page analytics exports agree with the sample project. Onboarding reset preserves original references; stored briefs respect field limits; marketing responds to changes in the reduced-motion preference.
 
-Fourteen isolated integration regressions extend the existing 44 browser checks to 58. Node tests and TypeScript/structure checks run locally; production build and browser checks run in GitHub validation.
+Fifteen isolated integration regressions extend the existing 44 browser checks to 59. Node tests and TypeScript/structure checks run locally; production build and browser checks run in GitHub validation.
