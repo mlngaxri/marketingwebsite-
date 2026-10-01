@@ -15,7 +15,7 @@ await check('The collection has 20 unique local previews with source and referen
  for(const card of await page.locator('.portfolio-card').all()){const size=await card.evaluate(element=>({card:element.getBoundingClientRect().width,image:element.querySelector('img').getBoundingClientRect().width}));assert.ok(size.image>=size.card*.95,'The design must fill its gallery card');}
  for(const card of await page.locator('.portfolio-card').all()){
   const id=await card.getAttribute('data-project');await card.locator('button').click();
-  await page.locator('.work-dialog[open]').waitFor();assert.equal(await page.locator('.work-source').getAttribute('href'),`https://fourthform-marketing.vercel.app/work/${id}`);
+  await page.locator('.work-dialog[open]').waitFor();assert.equal(await page.locator('.work-source').getAttribute('href'),`/work/${id}`);
   assert.equal(await page.locator('.work-reference').getAttribute('href'),`/preview/start?reference=${id}`);
   await page.frameLocator('.work-dialog-media iframe').locator('h1').waitFor();
   assert.ok((await page.locator('#work-dialog-description').textContent()).length>80);
@@ -32,9 +32,9 @@ await check('Design filters update the collection, pressed state and announced c
  await page.getByRole('button',{name:/^All work/}).click();assert.equal(await page.locator('.portfolio-card').count(),20);
 });
 await check('Keyboard exploration closes cleanly and restores focus to its card',async page=>{
- await page.goto(base+'/work');const trigger=page.getByRole('button',{name:'Explore Monolith Hero',exact:true});await trigger.click();
- assert.equal(await page.locator('#work-dialog-title').textContent(),'Monolith Hero');await page.keyboard.press('ArrowRight');assert.equal(await page.locator('#work-dialog-title').textContent(),'OYLA');
- await page.keyboard.press('ArrowLeft');assert.equal(await page.locator('#work-dialog-title').textContent(),'Monolith Hero');
+ await page.goto(base+'/work');const trigger=page.getByRole('button',{name:'Explore Stratum',exact:true});await trigger.click();
+ assert.equal(await page.locator('#work-dialog-title').textContent(),'Stratum');await page.keyboard.press('ArrowRight');assert.equal(await page.locator('#work-dialog-title').textContent(),'OYLA');
+ await page.keyboard.press('ArrowLeft');assert.equal(await page.locator('#work-dialog-title').textContent(),'Stratum');
  await page.keyboard.press('Escape');await page.locator('.work-dialog[open]').waitFor({state:'hidden'});assert.equal(await trigger.evaluate(element=>element===document.activeElement),true);assert.ok(!new URL(page.url()).searchParams.has('project'));assert.equal(await page.evaluate(()=>document.documentElement.style.overflow),'');
 });
 await check('Direct design links open the right preview and unknown designs remain safe',async page=>{
@@ -42,7 +42,7 @@ await check('Direct design links open the right preview and unknown designs rema
  await page.goto(base+'/work?project=unknown');assert.equal(await page.locator('.work-dialog[open]').count(),0);assert.equal(await page.locator('.portfolio-card').count(),20);
 });
 await check('Live concepts open inside the gallery and offer a still overview',async page=>{
- await page.goto(base+'/work');await page.getByRole('button',{name:'Explore Monolith Hero',exact:true}).click();
+ await page.goto(base+'/work');await page.getByRole('button',{name:'Explore Stratum',exact:true}).click();
  const frame=page.frameLocator('.work-dialog-media iframe');await frame.locator('h1').waitFor();assert.equal(await frame.locator('h1').textContent(),'Architecture for the way you live.');
  await page.getByRole('button',{name:'Show the design overview',exact:true}).click();await page.locator('.work-dialog-media img').evaluate(image=>image.decode());
  await page.getByRole('button',{name:'Explore the live website',exact:true}).click();await frame.locator('h1').waitFor();

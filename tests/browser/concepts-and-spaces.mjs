@@ -11,6 +11,7 @@ await check('All 20 live concepts deliver the business copy, meaningful sections
  for(const concept of concepts){
   await p.goto(`${base}/work/${concept.id}`);await p.evaluate(async()=>document.fonts.ready);await p.locator('.concept-art img').evaluate(image=>image.decode());
   assert.equal(await p.locator('h1').textContent(),concept.headline);assert.equal(await p.locator('.concept-body').textContent(),concept.body);assert.equal(await p.locator('.concept-offer-grid article').count(),3);
+  if(concept.layout==='landscape'){const coverage=await p.locator('.concept-art').evaluate(e=>({art:e.getBoundingClientRect().width,hero:e.closest('.concept-hero').getBoundingClientRect().width}));assert.ok(coverage.art>=coverage.hero*.99,'Landscape artwork must fill the hero');}
   assert.match(await p.locator('.concept-studio-bar').textContent(),/Fictional business/);assert.ok(!(await p.locator('body').innerText()).includes('\u2014'));
   const png=await p.screenshot();const poster=await sharp(png).webp({quality:82}).toBuffer();console.log(`FF_CONCEPT_POSTER_${concept.id}=${poster.toString('base64')}`);
   await p.locator('.concept-contact button').click();await p.locator('.concept-enquiry').waitFor({state:'visible'});

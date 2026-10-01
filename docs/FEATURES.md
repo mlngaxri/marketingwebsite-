@@ -5,13 +5,13 @@ Fourthform combines a marketing website, a guided brief and an interactive clien
 ## Marketing and portfolio
 
 - An editorial homepage explaining the audience, custom website service, visitor goals and next action.
-- A three-design hero selector using Monolith Hero, OYLA and Keel from the Fourthform studio collection.
+- A three-design hero selector using Stratum, OYLA and Keel from the Fourthform studio collection.
 - Four featured designs in a staggered image grid, linked to the complete `/work` collection.
 - Twenty selected designs, curated after visually reviewing 49 public previews. All 20 designs now have live concept pages with refined business copy and Fourthform reference links.
 - Immersive, Editorial, Product and Expressive filters with result counts and selected states.
 - Large native dialog previews with project descriptions, three design techniques per project, source links, previous/next controls, arrow-key browsing, Escape dismissal and restored keyboard focus.
 - Direct project links such as `/work?project=oyla`.
-- Four local, silent motion clips, requested explicitly rather than downloaded automatically: Monolith Hero, Keel, Nature Ritual and Playful Idea.
+- Four local, silent motion clips, requested explicitly rather than downloaded automatically: Stratum, Keel, Nature Ritual and Playful Idea.
 - Optimized local WebP images and smaller responsive variants.
 - A chosen design becomes a brief reference without replacing existing business details or links.
 - A four-stage process explanation: Direction, Build, Review and Launch.
