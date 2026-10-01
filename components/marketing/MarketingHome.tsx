@@ -62,8 +62,7 @@ export default function MarketingHome(){
         gsap.fromTo(".mk-preview-shell",{scale:.945,y:62,opacity:.45},{scale:1,y:0,opacity:1,ease:"none",scrollTrigger:{trigger:".mk-portal",start:"top 72%",end:"top 22%",scrub:1.05}});
 
         const states=gsap.timeline({scrollTrigger:{trigger:".mk-states",start:"top top",end:"bottom bottom",scrub:1}});
-        states.to(".mk-state-monday",{opacity:0,scale:.985,ease:"none"},.12)
-          .fromTo(".mk-state-saturday",{opacity:0,scale:1.015},{opacity:1,scale:1,ease:"none"},.18)
+        states.fromTo(".mk-state-saturday",{clipPath:"inset(0 0 100% 0)"},{clipPath:"inset(0 0 0% 0)",ease:"none"},.12)
           .to(".mk-state-label span:first-child",{opacity:.28},.18)
           .to(".mk-state-label span:last-child",{opacity:1},.18);
 

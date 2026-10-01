@@ -161,3 +161,9 @@
  .mk-state-frame{position:relative;height:400px;opacity:1!important;transform:none!important}
  .mk-state-label span{opacity:1!important}
 }
+
+/* An opaque reveal keeps letterforms readable while the scheduled content changes. */
+.mk-state-saturday{opacity:1;clip-path:inset(0 0 100% 0)}
+.mk-site:not(.mk-motion) .mk-state-saturday{clip-path:none}
+@media(prefers-reduced-motion:reduce){.mk-state-saturday{clip-path:none}}
+@media(max-width:1050px){.mk-state-frame{clip-path:none!important}}
