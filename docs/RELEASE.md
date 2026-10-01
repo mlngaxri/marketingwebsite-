@@ -4,6 +4,8 @@ The preview scope is finalized: an editorial marketing site with Site/First onbo
 
 The portal copies are identical. Browser-local persistence and recovery are verified. Accounts, live CMS services, SEO crawling, analytics collection, DNS verification, payments and publishing remain illustrative, as requested. Saved onboarding details seed Initial Direction in the example workspace.
 
-Final acceptance runs in GitHub validation: production build, TypeScript and rendered-markup checks, twelve portal model/build/content tests, five marketing content/markup tests, and 90 browser flow checks plus an animated visual tour. Browser evidence covers five viewport widths, keyboard navigation, motion preferences, success journeys, failed saves, uploads, draft recovery, cross-tab conflicts, closed-dialog focus, delayed actions after Reset, and short landscape screens. Screenshots and JSON results are available in the validation artifact.
+Final acceptance runs in GitHub validation: production build, TypeScript and rendered-markup checks, twelve portal model/build/content tests, five marketing content/markup tests, and 100 browser flow checks plus an animated visual tour. Browser evidence covers five viewport widths, keyboard navigation, motion preferences, success journeys, failed saves, uploads, draft recovery, cross-tab conflicts, closed-dialog focus, delayed actions after Reset, and short landscape screens. Screenshots and JSON results are available in the validation artifact.
 
 Deployment remains the existing Vercel/GitHub project configuration. These changes do not link or manually deploy a Vercel project.
+
+The marketing portfolio now contains 20 selected MotionSites studies, source links, large previews, design filters, optional local motion clips and a reference-to-brief flow. The homepage uses selected portfolio imagery and a staggered featured collection.

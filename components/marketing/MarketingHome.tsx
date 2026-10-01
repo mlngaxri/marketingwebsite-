@@ -2,6 +2,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { demoSite } from "../../lib/preview/site";
+import {heroProjects} from "../../lib/portfolio/projects";
+import FeaturedWork from "../work/FeaturedWork";
 
 
 const PREVIEW_TASKS=[
@@ -11,15 +13,17 @@ const PREVIEW_TASKS=[
 ];
 
 export default function MarketingHome(){
-  const heroSite=useMemo(()=>demoSite("/",false),[]);
+  const [heroIndex,setHeroIndex]=useState(0);
+  const heroProject=heroProjects[heroIndex];
   const usual=useMemo(()=>demoSite("/",false),[]);
   const evening=useMemo(()=>demoSite("/",true,"An evening,\nthoughtfully prepared."),[]);
   const [menuOpen,setMenuOpen]=useState(false);
   const [previewTask,setPreviewTask]=useState("review");
   const portalFrame=useRef<HTMLIFrameElement|null>(null);
-  function openPreviewTask(view:string){
+  function openPreviewTask(view:string,scroll=false){
     setPreviewTask(view);
     portalFrame.current?.contentWindow?.postMessage({type:"fourthform:preview-view",view},location.origin);
+    if(scroll&&matchMedia("(max-width:760px)").matches)portalFrame.current?.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
   }
   const menuButton=useRef<HTMLButtonElement|null>(null);
   const mobileMenu=useRef<HTMLDivElement|null>(null);
@@ -49,10 +53,11 @@ export default function MarketingHome(){
           .from(".mk-hero-actions",{opacity:0,y:14,duration:.62},.34)
           .from(".mk-hero-site",{opacity:0,y:52,scale:.955,duration:1.1,ease:"expo.out"},.12);
 
-        gsap.timeline({scrollTrigger:{trigger:".mk-hero-wrap",start:"top top",end:"bottom bottom",scrub:1.1}})
-          .to(".mk-hero-copy",{opacity:.12,y:-24,ease:"none"},0)
-          .to(".mk-hero-site",{width:"min(1040px,92vw)",height:"min(680px,69vh)",borderRadius:10,y:28,ease:"none"},0);
+        if(matchMedia("(min-width:1051px)").matches)gsap.timeline({scrollTrigger:{trigger:".mk-hero-wrap",start:"top top",end:"bottom bottom",scrub:1.1}})
+          .to(".mk-hero-design-image",{scale:1.06,ease:"none"},0)
+          .to(".mk-hero-site",{y:24,ease:"none"},0);
 
+        gsap.from(".work-featured .work-card",{y:35,opacity:0,stagger:.12,duration:.9,ease:"power3.out",scrollTrigger:{trigger:".work-featured-grid",start:"top 84%"}});
         gsap.from(".mk-manifesto h2",{y:42,opacity:0,duration:1,ease:"power4.out",scrollTrigger:{trigger:".mk-manifesto",start:"top 72%"}});
         gsap.from(".mk-manifesto p",{y:22,opacity:0,duration:.8,ease:"power3.out",scrollTrigger:{trigger:".mk-manifesto",start:"top 64%"}});
 
@@ -84,7 +89,7 @@ export default function MarketingHome(){
 
   return <main ref={root} className="mk-site" id="top">
     <a className="skip-link" href="#main-content">Skip to content</a>
-    <nav className="mk-nav" aria-label="Primary navigation"><a className="mk-wordmark" href="#top">fourthform</a><div className="mk-nav-links"><a href="#work">Work</a><a href="#process">Process</a><a href="#portal">Portal</a><a href="#states">States</a><a href="https://fourthform-client-portal.vercel.app/">Client portal ↗</a><a href="#pricing">Pricing</a></div><button ref={menuButton} className="mk-menu-toggle" type="button" aria-controls="mk-mobile-menu" aria-expanded={menuOpen} aria-label={menuOpen?"Close navigation":"Open navigation"} onClick={()=>setMenuOpen(open=>!open)}>{menuOpen?"Close":"Menu"}</button><a className="mk-button mk-button-dark" href="/preview/start">Start a site</a><div ref={mobileMenu} className="mk-mobile-menu" id="mk-mobile-menu" hidden={!menuOpen} onBlur={event=>{if(event.relatedTarget&&!event.currentTarget.contains(event.relatedTarget)&&event.relatedTarget!==menuButton.current)setMenuOpen(false);}}>{[["#work","Work"],["#process","Process"],["#portal","Portal preview"],["#states","States"],["#pricing","Pricing"],["#questions","Questions"],["https://fourthform-client-portal.vercel.app/","Client portal ↗"]].map(([href,label])=><a key={href} href={href} onClick={()=>{setMenuOpen(false);menuButton.current?.focus();}}>{label}</a>)}</div></nav>
+    <nav className="mk-nav" aria-label="Primary navigation"><a className="mk-wordmark" href="#top">fourthform</a><div className="mk-nav-links"><Link href="/work">Work</Link><a href="#process">Process</a><a href="#portal">Portal</a><a href="#states">States</a><a href="https://fourthform-client-portal.vercel.app/">Client portal ↗</a><a href="#pricing">Pricing</a></div><button ref={menuButton} className="mk-menu-toggle" type="button" aria-controls="mk-mobile-menu" aria-expanded={menuOpen} aria-label={menuOpen?"Close navigation":"Open navigation"} onClick={()=>setMenuOpen(open=>!open)}>{menuOpen?"Close":"Menu"}</button><a className="mk-button mk-button-dark" href="/preview/start">Start a site</a><div ref={mobileMenu} className="mk-mobile-menu" id="mk-mobile-menu" hidden={!menuOpen} onBlur={event=>{if(event.relatedTarget&&!event.currentTarget.contains(event.relatedTarget)&&event.relatedTarget!==menuButton.current)setMenuOpen(false);}}>{[["/work","Work"],["#process","Process"],["#portal","Portal preview"],["#states","States"],["#pricing","Pricing"],["#questions","Questions"],["https://fourthform-client-portal.vercel.app/","Client portal ↗"]].map(([href,label])=><a key={href} href={href} onClick={()=>{setMenuOpen(false);menuButton.current?.focus();}}>{label}</a>)}</div></nav>
 
     <section className="mk-hero-wrap" id="main-content" tabIndex={-1}>
       <div className="mk-hero"><div className="mk-container mk-hero-grid">
@@ -93,9 +98,9 @@ export default function MarketingHome(){
           <h1 className="mk-display"><span className="mk-hero-line"><span>Websites,</span></span><span className="mk-hero-line"><span><em>brought into form.</em></span></span></h1>
           <p className="mk-body">We design and build a custom website that helps people understand your business and take the next step. Share ideas, review the design and manage updates in one simple workspace.</p>
           <p className="mk-included">A$1,500 · 3 revision rounds · Core included</p>
-          <div className="mk-hero-actions"><a className="mk-button mk-button-dark" href="/preview/start">Start a site</a><a className="mk-text-link" href="#portal">Try the workspace ↘</a></div>
+          <div className="mk-hero-actions"><a className="mk-button mk-button-dark" href="/preview/start">Start a site</a><Link className="mk-text-link" href="/work">Explore the work ↗</Link></div>
         </div>
-        <div className="mk-hero-stage"><div className="mk-hero-site"><iframe tabIndex={-1} title="Mori House website example" sandbox="allow-same-origin" srcDoc={heroSite}/></div><span className="mk-stage-caption">Mori House · An example of what takes form.</span></div>
+        <div className="mk-hero-stage"><div className="mk-hero-site"><img className="mk-hero-design-image" key={heroProject.id} src={heroProject.image} width={heroProject.width} height={heroProject.height} alt={`${heroProject.title} website design from the MotionSites portfolio`} fetchPriority="high"/><Link className="mk-hero-design-link" href={`/work?project=${heroProject.id}`} aria-label={`Explore ${heroProject.title}`}><span>Explore design ↗</span></Link></div><div className="mk-hero-design-meta" aria-live="polite"><span>{heroProject.title} · {heroProject.sector}</span><span>{String(heroIndex+1).padStart(2,"0")} / 03</span></div><div className="mk-hero-designs" role="group" aria-label="Featured website designs">{heroProjects.map((project,i)=><button type="button" key={project.id} aria-pressed={heroIndex===i} onClick={()=>setHeroIndex(i)}><img src={project.thumbnail} width="39" height="30" alt=""/>{project.title}</button>)}</div><Link className="mk-hero-all-work" href="/work">20 selected designs from MotionSites <span aria-hidden="true">↗</span></Link></div>
       </div></div>
     </section>
 
@@ -111,11 +116,7 @@ export default function MarketingHome(){
       </div>
     </div></section>
 
-    <section className="mk-selected-work" id="work"><div className="mk-container">
-      <div className="mk-section-head"><span className="mk-kicker">An example in practice</span><h2 className="mk-display">The details matter.<br/><em>So does the journey.</em></h2></div>
-      <figure className="mk-selected-photo"><img src="/marketing/mori-dish.webp" alt="Seasonal Japanese dish from the Mori House restaurant concept" width="1400" height="900" loading="lazy"/><figcaption><span>Mori House</span><span>Hospitality · Website concept</span></figcaption></figure>
-      <div className="mk-work-context"><p>A restaurant website with a clear purpose: help guests get a feel for the room, explore the menu and plan their visit.</p><div><span className="mk-kicker">Three clear destinations</span><p>Home · Menu · Visit</p><a className="mk-text-link" href="/preview">Explore the example project ↗</a></div></div>
-    </div></section>
+    <FeaturedWork/>
 
     <section className="mk-process" id="process"><div className="mk-container">
       <div className="mk-section-head"><span className="mk-kicker">From brief to launch</span><h2 className="mk-display">Four stages.<br/><em>One clear next step.</em></h2></div>
@@ -129,7 +130,7 @@ export default function MarketingHome(){
 
     <section className="mk-portal" id="portal"><div className="mk-container">
       <div className="mk-portal-head"><h2 className="mk-display">See what’s changing.<br/><em>Know what’s next.</em></h2><p className="mk-body">Your client portal connects the brief, the website and the next decision. Try these three everyday tasks in the Mori House example.</p></div>
-      <div className="mk-preview-tasks" role="group" aria-label="Choose a portal preview task">{PREVIEW_TASKS.map(task=><button type="button" className="mk-preview-task" key={task.view} data-preview-task={task.view} aria-pressed={previewTask===task.view} aria-controls="marketing-portal" onClick={()=>openPreviewTask(task.view)}><span className="mk-task-number">{task.number}<span aria-hidden="true">↗</span></span><strong>{task.title}</strong><span className="mk-task-copy">{task.copy}</span></button>)}</div>
+      <div className="mk-preview-tasks" role="group" aria-label="Choose a portal preview task">{PREVIEW_TASKS.map(task=><button type="button" className="mk-preview-task" key={task.view} data-preview-task={task.view} aria-pressed={previewTask===task.view} aria-controls="marketing-portal" onClick={()=>openPreviewTask(task.view,true)}><span className="mk-task-number">{task.number}<span aria-hidden="true">↗</span></span><strong>{task.title}</strong><span className="mk-task-copy">{task.copy}</span></button>)}</div>
       <div className="mk-preview-shell"><div className="mk-preview-top"><span>Interactive portal preview</span><span>Example data · <Link href={`/preview?view=${previewTask}`}>Open full preview ↗</Link></span></div><iframe ref={portalFrame} id="marketing-portal" className="mk-portal-frame" src="/portal-preview/index.html" title="Interactive Fourthform portal preview" loading="lazy" onLoad={()=>openPreviewTask(previewTask)}/></div>
       <div className="mk-preview-caption"><p>Explore freely. Edits stay on this device. Sending, payments and launch are simulated.</p><Link className="mk-text-link" href={`/preview?view=${previewTask}`}>Open full preview ↗</Link></div>
     </div></section>
@@ -156,6 +157,6 @@ export default function MarketingHome(){
       <details><summary>What are Core and Pro?<span aria-hidden="true">+</span></summary><p>Core is the included toolkit for content updates, basic analytics, search details and domain management. Pro is optional at A$39 / month for scheduled States, deeper analytics and search insights. You can explore the Pro concept in the preview.</p></details>
       <details><summary>What can I try in the preview?<span aria-hidden="true">+</span></summary><p>Explore the example website, add feedback, update content and try the analytics and launch journey. Drafts stay on this device and can be exported from Settings. Accounts, team submissions, payments and publishing are simulated, so you can explore without signing up or entering card details.</p></details>
     </div></div></section>
-    <footer className="mk-footer"><div className="mk-container"><b>fourthform</b><span>Websites, brought into form.</span><div className="mk-footer-links"><a href="#pricing">Pricing</a><a href="#questions">Questions</a><Link href="/preview">Try the portal ↗</Link></div><span>Brisbane, Australia</span></div></footer>
+    <footer className="mk-footer"><div className="mk-container"><b>fourthform</b><span>Websites, brought into form.</span><div className="mk-footer-links"><Link href="/work">Work</Link><a href="#pricing">Pricing</a><a href="#questions">Questions</a><Link href="/preview">Try the portal ↗</Link></div><span>Brisbane, Australia</span></div></footer>
   </main>
 }
