@@ -9,9 +9,9 @@ import "./marketing.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://fourthform-marketing.vercel.app/"),
-  title: { default: "Fourthform — Websites, brought into form.", template: "%s — Fourthform" },
-  description: "A considered website, shaped with you. Explore Fourthform’s design process, client portal and ongoing website care.",
-  openGraph: { title: "Fourthform — Websites, brought into form.", description: "A considered website, shaped with you.", type: "website", locale: "en_AU" },
+  title: { default: "Fourthform | Custom websites for independent businesses", template: "%s | Fourthform" },
+  description: "Custom websites from brief to launch. Design, review and everyday updates in one client portal. Site is A$1,500 with Core included.",
+  openGraph: { title: "Fourthform | Custom websites for independent businesses", description: "A custom business website, a clear process and one client portal from brief to everyday updates.", type: "website", locale: "en_AU" },
 };
 
 export default function RootLayout({

@@ -4,11 +4,23 @@ import Link from "next/link";
 import { demoSite } from "../../lib/preview/site";
 
 
+const PREVIEW_TASKS=[
+    {view:"review",number:"01",title:"Guide the design",copy:"Click a word or image to describe a change. A Direction keeps your feedback attached to the right place."},
+    {view:"pages",number:"02",title:"Keep it current",copy:"Update a heading, a photo or a booking button. Your layout and typography stay intact."},
+    {view:"analytics",number:"03",title:"Understand your visitors",copy:"See where visitors come from and which pages they explore. Try a different period or export the example report."},
+];
+
 export default function MarketingHome(){
   const heroSite=useMemo(()=>demoSite("/",false),[]);
   const monday=useMemo(()=>demoSite("/",false,"A table worth\nstaying for."),[]);
   const saturday=useMemo(()=>demoSite("/",true,"A longer lunch.\nA little more time."),[]);
   const [menuOpen,setMenuOpen]=useState(false);
+  const [previewTask,setPreviewTask]=useState("review");
+  const portalFrame=useRef<HTMLIFrameElement|null>(null);
+  function openPreviewTask(view:string){
+    setPreviewTask(view);
+    portalFrame.current?.contentWindow?.postMessage({type:"fourthform:preview-view",view},location.origin);
+  }
   const menuButton=useRef<HTMLButtonElement|null>(null);
   const mobileMenu=useRef<HTMLDivElement|null>(null);
   const root=useRef<HTMLElement|null>(null);
@@ -75,22 +87,76 @@ export default function MarketingHome(){
     <a className="skip-link" href="#main-content">Skip to content</a>
     <nav className="mk-nav" aria-label="Primary navigation"><a className="mk-wordmark" href="#top">fourthform</a><div className="mk-nav-links"><a href="#work">Work</a><a href="#process">Process</a><a href="#portal">Portal</a><a href="#states">States</a><a href="https://fourthform-client-portal.vercel.app/">Client portal ↗</a><a href="#pricing">Pricing</a></div><button ref={menuButton} className="mk-menu-toggle" type="button" aria-controls="mk-mobile-menu" aria-expanded={menuOpen} aria-label={menuOpen?"Close navigation":"Open navigation"} onClick={()=>setMenuOpen(open=>!open)}>{menuOpen?"Close":"Menu"}</button><a className="mk-button mk-button-dark" href="/preview/start">Start a site</a><div ref={mobileMenu} className="mk-mobile-menu" id="mk-mobile-menu" hidden={!menuOpen} onBlur={event=>{if(event.relatedTarget&&!event.currentTarget.contains(event.relatedTarget)&&event.relatedTarget!==menuButton.current)setMenuOpen(false);}}>{[["#work","Work"],["#process","Process"],["#portal","Portal preview"],["#states","States"],["#pricing","Pricing"],["#questions","Questions"],["https://fourthform-client-portal.vercel.app/","Client portal ↗"]].map(([href,label])=><a key={href} href={href} onClick={()=>{setMenuOpen(false);menuButton.current?.focus();}}>{label}</a>)}</div></nav>
 
-    <section className="mk-hero-wrap" id="main-content" tabIndex={-1}><div className="mk-hero"><div className="mk-container mk-hero-grid"><div className="mk-hero-copy"><h1 className="mk-display"><span className="mk-hero-line"><span>Websites,</span></span><span className="mk-hero-line"><span><em>brought into form.</em></span></span></h1><p className="mk-body">From the first direction to the live site, Fourthform gives you one place to shape, review, launch and keep your website current.</p><p className="mk-included">3 revision rounds included</p><div className="mk-hero-actions"><a className="mk-button mk-button-dark" href="/preview/start">Start a site</a><a className="mk-text-link" href="#portal">Explore the portal ↘</a></div></div><div className="mk-hero-stage"><div className="mk-hero-site"><iframe tabIndex={-1} title="Mori House website example" sandbox="allow-same-origin" srcDoc={heroSite}/></div><span className="mk-stage-caption">One website, taking form.</span></div></div></div></section>
+    <section className="mk-hero-wrap" id="main-content" tabIndex={-1}>
+      <div className="mk-hero"><div className="mk-container mk-hero-grid">
+        <div className="mk-hero-copy">
+          <p className="mk-kicker mk-hero-eyebrow">Custom websites for independent businesses</p>
+          <h1 className="mk-display"><span className="mk-hero-line"><span>Websites,</span></span><span className="mk-hero-line"><span><em>brought into form.</em></span></span></h1>
+          <p className="mk-body">A custom website that helps people understand your business and take the next step. Share ideas, review the design and manage updates in one simple workspace.</p>
+          <p className="mk-included">A$1,500 · 3 revision rounds · Core included</p>
+          <div className="mk-hero-actions"><a className="mk-button mk-button-dark" href="/preview/start">Start a site</a><a className="mk-text-link" href="#portal">Try the workspace ↘</a></div>
+        </div>
+        <div className="mk-hero-stage"><div className="mk-hero-site"><iframe tabIndex={-1} title="Mori House website example" sandbox="allow-same-origin" srcDoc={heroSite}/></div><span className="mk-stage-caption">Mori House · An example of what takes form.</span></div>
+      </div></div>
+    </section>
 
-    <section className="mk-manifesto"><div className="mk-container mk-manifesto-grid"><span className="mk-kicker">The idea</span><div><h2 className="mk-display">From brief to live,<br/><em>in one place.</em></h2><p className="mk-body">The website stays at the centre. Direction, review, revisions and launch happen around it, without disappearing into email threads and scattered folders.</p></div></div></section>
+    <section className="mk-manifesto"><div className="mk-container mk-manifesto-grid">
+      <span className="mk-kicker">Made for your business</span>
+      <div><h2 className="mk-display">Clear to your visitors.<br/><em>Simple for you.</em></h2>
+        <p className="mk-body">We design and build around what your business needs people to do. You bring the context, guide the refinements and approve the result. Your portal keeps the whole project in view.</p>
+        <div className="mk-outcomes">{[
+          ["01","Make the business clear","Give visitors the right words, images and details to understand what you offer."],
+          ["02","Make the next step easy","Create a clear path to book, enquire, visit or explore your services."],
+          ["03","Make updates manageable","Change everyday content in the portal while keeping the design consistent."],
+        ].map(([n,title,copy])=><div key={n}><span>{n}</span><h3>{title}</h3><p>{copy}</p></div>)}</div>
+      </div>
+    </div></section>
 
-    <section className="mk-selected-work" id="work"><div className="mk-container"><div className="mk-section-head"><span className="mk-kicker">A direction, taking form</span><h2 className="mk-display">Considered details.<br/><em>A clearer whole.</em></h2></div><figure className="mk-selected-photo"><img src="/marketing/mori-dish.webp" alt="Seasonal Japanese dish from the Mori House restaurant concept" width="1400" height="900" loading="lazy"/><figcaption><span>Mori House</span><span>Hospitality · Example direction</span></figcaption></figure></div></section>
+    <section className="mk-selected-work" id="work"><div className="mk-container">
+      <div className="mk-section-head"><span className="mk-kicker">An example in practice</span><h2 className="mk-display">The details matter.<br/><em>So does the journey.</em></h2></div>
+      <figure className="mk-selected-photo"><img src="/marketing/mori-dish.webp" alt="Seasonal Japanese dish from the Mori House restaurant concept" width="1400" height="900" loading="lazy"/><figcaption><span>Mori House</span><span>Hospitality · Website concept</span></figcaption></figure>
+      <div className="mk-work-context"><p>A restaurant website with a clear purpose: help guests get a feel for the room, explore the menu and plan their visit.</p><div><span className="mk-kicker">Three clear destinations</span><p>Home · Menu · Visit</p><a className="mk-text-link" href="/preview">Explore the example project ↗</a></div></div>
+    </div></section>
 
-    <section className="mk-process" id="process"><div className="mk-container"><div className="mk-section-head"><span className="mk-kicker">Process</span><h2 className="mk-display">Four clear stages.<br/>Nothing to decode.</h2></div><div className="mk-process-rail"><div className="mk-process-line"><i className="mk-process-progress"/></div>{[["01","Direction","Show us what you mean."],["02","Build","We turn it into the site."],["03","Review","Comment on the real website."],["04","Live","Approve, connect and launch."]].map(([n,t,c])=><div className="mk-process-step" key={n}><span>{n}</span><h3>{t}</h3><p>{c}</p></div>)}</div></div></section>
+    <section className="mk-process" id="process"><div className="mk-container">
+      <div className="mk-section-head"><span className="mk-kicker">From brief to launch</span><h2 className="mk-display">Four stages.<br/><em>One clear next step.</em></h2></div>
+      <div className="mk-process-rail"><div className="mk-process-line"><i className="mk-process-progress"/></div>{[
+        ["01","Direction","Tell us about the business, your goals and the references you like. This becomes your Initial Direction."],
+        ["02","Build","We design and build your website. Follow the project’s progress in your portal."],
+        ["03","Review","Explore the working website and point to what you want changed. Send your Directions together as a revision round."],
+        ["04","Launch","Approve the website, complete the balance and work through the domain and final checks. Then keep it current with Core."],
+      ].map(([n,title,copy])=><div className="mk-process-step" key={n}><span>{n}</span><h3>{title}</h3><p>{copy}</p></div>)}</div>
+    </div></section>
 
-    <section className="mk-portal" id="portal"><div className="mk-container"><div className="mk-portal-head"><h2 className="mk-display">The website stays<br/><em>in the middle.</em></h2><p className="mk-body">Explore the Fourthform portal. Resize the site, switch pages, add a Direction or replace an image. This interactive preview uses example data.</p></div><div className="mk-preview-shell"><div className="mk-preview-top"><span>Interactive portal preview</span><span>Example data · <Link href="/preview">Open full preview ↗</Link></span></div><iframe className="mk-portal-frame" src="/portal-preview/index.html" title="Interactive Fourthform portal preview" loading="lazy"/></div></div></section>
+    <section className="mk-portal" id="portal"><div className="mk-container">
+      <div className="mk-portal-head"><h2 className="mk-display">See what’s changing.<br/><em>Know what’s next.</em></h2><p className="mk-body">Your client portal connects the brief, the website and the next decision. Try these three everyday tasks in the Mori House example.</p></div>
+      <div className="mk-preview-tasks" role="group" aria-label="Choose a portal preview task">{PREVIEW_TASKS.map(task=><button type="button" className="mk-preview-task" key={task.view} data-preview-task={task.view} aria-pressed={previewTask===task.view} aria-controls="marketing-portal" onClick={()=>openPreviewTask(task.view)}><span className="mk-task-number">{task.number}<span aria-hidden="true">↗</span></span><strong>{task.title}</strong><span className="mk-task-copy">{task.copy}</span></button>)}</div>
+      <div className="mk-preview-shell"><div className="mk-preview-top"><span>Interactive portal preview</span><span>Example data · <Link href={`/preview?view=${previewTask}`}>Open full preview ↗</Link></span></div><iframe ref={portalFrame} id="marketing-portal" className="mk-portal-frame" src="/portal-preview/index.html" title="Interactive Fourthform portal preview" loading="lazy" onLoad={()=>openPreviewTask(previewTask)}/></div>
+      <div className="mk-preview-caption"><p>Explore freely. Edits stay on this device. Sending, payments and launch are simulated.</p><Link className="mk-text-link" href={`/preview?view=${previewTask}`}>Open full preview ↗</Link></div>
+    </div></section>
 
-    <section className="mk-states" id="states"><div className="mk-states-pin"><div className="mk-container mk-states-grid"><div className="mk-states-copy"><span className="mk-kicker">States · Pro</span><h2 className="mk-display">Monday isn’t<br/><em>Saturday.</em></h2><p className="mk-body">A Monday menu. A longer Saturday lunch. Scheduled States let the website change with the moment, then return to its default. Explore this Pro concept in the preview.</p><div className="mk-state-label"><span>Monday</span><span>Saturday</span></div></div><div className="mk-state-object"><iframe tabIndex={-1} className="mk-state-frame mk-state-monday" title="Mori House on Monday" sandbox="allow-same-origin" srcDoc={monday}/><iframe tabIndex={-1} className="mk-state-frame mk-state-saturday" title="Mori House on Saturday" sandbox="allow-same-origin" srcDoc={saturday}/></div></div></div></section>
+    <section className="mk-states" id="states"><div className="mk-states-pin"><div className="mk-container mk-states-grid">
+      <div className="mk-states-copy"><span className="mk-kicker">States · Optional with Pro</span><h2 className="mk-display">Monday isn’t<br/><em>Saturday.</em></h2><p className="mk-body">A weekday menu. A weekend welcome. States are scheduled versions of selected website content. Set the days and times, then let your usual content return when the moment passes.</p><p className="mk-state-note">Explore a State in the preview. Included with Pro at A$39 / month.</p><div className="mk-state-label"><span>Monday</span><span>Saturday</span></div></div>
+      <div className="mk-state-object"><iframe tabIndex={-1} className="mk-state-frame mk-state-monday" title="Mori House on Monday" sandbox="allow-same-origin" srcDoc={monday}/><iframe tabIndex={-1} className="mk-state-frame mk-state-saturday" title="Mori House on Saturday" sandbox="allow-same-origin" srcDoc={saturday}/></div>
+    </div></div></section>
 
-    <section className="mk-pricing" id="pricing"><div className="mk-container"><div className="mk-pricing-head"><h2 className="mk-display">A website costs<br/><em>A$1,500.</em></h2><p className="mk-body">A$200 starts the project. A$1,300 is due when you approve the finished website for launch.</p></div><div className="mk-price-line"><span>Site</span><strong>A$1,500 <small>once</small></strong><p>Up to 5 custom pages, responsive design, forms, initial SEO, analytics, the client portal, Core and three revision rounds.</p></div><div className="mk-price-secondary"><div><span>Core</span><strong>Included</strong><p>Everything needed to own and manage the site after launch.</p></div><div><span>Pro</span><strong>A$39 / month</strong><p>States, deeper analytics, heatmaps and automated recommendations.</p></div></div><div className="mk-first"><span>Fourthform First</span><p>For genuinely new businesses, a smaller one-page scope. <a href="/preview/start?package=first">Explore First ↗</a></p><strong>A$199</strong></div></div></section>
+    <section className="mk-pricing" id="pricing"><div className="mk-container">
+      <div className="mk-pricing-head"><h2 className="mk-display">A clear scope.<br/><em>A$1,500.</em></h2><p className="mk-body">Fourthform Site includes design, build and three revision rounds. A$200 starts the project. The A$1,300 balance is due when you approve the website for launch.</p></div>
+      <div className="mk-price-line"><span>Fourthform Site</span><strong>A$1,500 <small>once</small></strong><div><p>Up to 5 custom pages, responsive design, forms, initial SEO, analytics and your client portal.</p><ul className="mk-scope-list"><li>3 revision rounds, with any number of Directions</li><li>Core included after launch</li><li>Initial Direction uses no revision round</li></ul></div></div>
+      <div className="mk-price-secondary"><div><span>Core</span><strong>Included</strong><p>Your everyday portal toolkit: content updates, basic analytics, search details and domain management.</p></div><div><span>Pro</span><strong>A$39 / month</strong><p>An optional upgrade for scheduled States, deeper analytics and search insights.</p></div></div>
+      <div className="mk-first"><span>Fourthform First</span><p>For businesses opened within the last six months. One page, around 6 to 7 sections and one revision round. Core included. <a href="/preview/start?package=first">Explore First ↗</a></p><strong>A$199</strong></div>
+      <p className="mk-pricing-note">All prices are in Australian dollars. Domain registration stays with your chosen provider. Additional revision rounds are A$150 each.</p>
+    </div></section>
 
-    <section className="mk-final"><div className="mk-container mk-final-grid"><h2 className="mk-display">Bring it<br/><em>into form.</em></h2><div><p className="mk-body">Start with the business, the references, the rough ideas and the things you already have.</p><a className="mk-button mk-button-dark" href="/preview/start">Start a site</a></div></div></section>
-    <section className="mk-faq" id="questions"><div className="mk-container mk-faq-grid"><div><span className="mk-kicker">A little clarity</span><h2 className="mk-display">Before it<br/><em>takes form.</em></h2></div><div className="mk-faq-list"><details><summary>What starts the project?<span aria-hidden="true">+</span></summary><p>A$200 starts a Fourthform Site. You share a short business brief and your Initial Direction, then the website takes shape with you.</p></details><details><summary>How do Directions work?<span aria-hidden="true">+</span></summary><p>A Direction brings your words, images, links or drawings together in the portal. During Review, you can point to the exact part of the website you want changed.</p></details><details><summary>How many revision rounds are included?<span aria-hidden="true">+</span></summary><p>Site includes three revision rounds. First includes one. Initial Direction does not use a round, and a revision can contain any number of Directions.</p></details><details><summary>When is the remaining payment due?<span aria-hidden="true">+</span></summary><p>For Site, the A$1,300 balance is due when you approve the finished website for launch. The total is A$1,500. First is a smaller A$199 package.</p></details><details><summary>Do I need Pro?<span aria-hidden="true">+</span></summary><p>Core is included after launch. Pro is optional at A$39 per month for scheduled States and deeper insights. You can explore both in the preview.</p></details><details><summary>Can I try the portal first?<span aria-hidden="true">+</span></summary><p>Yes. The portal is an interactive example with browser-local drafts. No account, card details or payment are needed to explore it.</p></details></div></div></section>
-    <footer className="mk-footer"><div className="mk-container"><b>fourthform</b><span>Websites, brought into form.</span><span>Brisbane, Australia</span></div></footer>
+    <section className="mk-final"><div className="mk-container mk-final-grid"><h2 className="mk-display">Your business.<br/><em>In its own form.</em></h2><div><p className="mk-body">Start with a short brief. Tell us what you do, who the website is for and what you want people to do next.</p><a className="mk-button mk-button-dark" href="/preview/start">Start a site</a><p className="mk-start-note">Try the brief in this preview. No account or payment is required.</p></div></div></section>
+    <section className="mk-faq" id="questions"><div className="mk-container mk-faq-grid"><div><span className="mk-kicker">Before you begin</span><h2 className="mk-display">A few things,<br/><em>made clear.</em></h2></div><div className="mk-faq-list">
+      <details><summary>What does Fourthform do?<span aria-hidden="true">+</span></summary><p>We design and build a custom website for your business. You share the brief, review the working website and approve it for launch through your client portal. After launch, Core helps you keep everyday content up to date.</p></details>
+      <details><summary>What is a Direction?<span aria-hidden="true">+</span></summary><p>A Direction is your input for the website. Initial Direction brings together your brief and references. During Review, a Direction describes a change to a specific word, image or part of the page. You can write, upload, link or draw to explain it.</p></details>
+      <details><summary>How do revision rounds work?<span aria-hidden="true">+</span></summary><p>Collect everything you want changed, then submit those Directions together as one round. Site includes three rounds. First includes one. Saving drafts and sending your Initial Direction use no revision round. Additional rounds are A$150 each.</p></details>
+      <details><summary>What is the difference between Site and First?<span aria-hidden="true">+</span></summary><p>Site is A$1,500 for up to 5 custom pages, with A$200 to start and A$1,300 on approval. First is A$199 for one page with around 6 to 7 sections, for businesses opened within the last six months. Both include Core after launch.</p></details>
+      <details><summary>What are Core and Pro?<span aria-hidden="true">+</span></summary><p>Core is the included toolkit for content updates, basic analytics, search details and domain management. Pro is optional at A$39 / month for scheduled States, deeper analytics and search insights. You can explore the Pro concept in the preview.</p></details>
+      <details><summary>What can I try in the preview?<span aria-hidden="true">+</span></summary><p>Explore the example website, add feedback, update content and try the analytics and launch journey. Drafts stay on this device. Accounts, team submissions, payments and publishing are simulated, so you can explore without signing up or entering card details.</p></details>
+    </div></div></section>
+    <footer className="mk-footer"><div className="mk-container"><b>fourthform</b><span>Websites, brought into form.</span><div className="mk-footer-links"><a href="#pricing">Pricing</a><a href="#questions">Questions</a><Link href="/preview">Try the portal ↗</Link></div><span>Brisbane, Australia</span></div></footer>
   </main>
 }
