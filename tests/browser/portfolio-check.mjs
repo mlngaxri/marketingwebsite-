@@ -69,6 +69,7 @@ await check('Portfolio, dialog and reference brief reflow at small widths',async
  for(const width of [320,390,768,1024]){
   await page.setViewportSize({width,height:844});await page.goto(base+'/work');await page.locator('.portfolio-card').first().locator('button').click();
   assert.ok(await page.getByRole('button',{name:'Close design preview'}).isVisible());
+  const reference=await page.locator('.work-reference').boundingBox();assert.ok(reference&&reference.y>=0&&reference.y+reference.height<=844,'The reference action stays in view');
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));assert.ok(await page.locator('.work-dialog').evaluate(element=>element.scrollWidth<=element.clientWidth+1));
   if(width===390)await shot(page,'phone-dialog');await page.keyboard.press('Escape');
  }
