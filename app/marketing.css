@@ -60,3 +60,5 @@
 .mk-mobile-menu a{display:flex;align-items:center;min-height:48px;border-bottom:1px solid var(--mk-line);font-size:15px}
 @media(min-width:761px){.mk-mobile-menu{display:none}}
 @media(max-width:760px){.mk-menu-toggle{display:block;margin-left:auto}.mk-nav{gap:10px}}
+
+.mk-hero-site iframe,.mk-state-frame{pointer-events:none}
