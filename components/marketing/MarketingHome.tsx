@@ -16,13 +16,14 @@ export default function MarketingHome(){
 
   useEffect(()=>{if(!menuOpen)return;mobileMenu.current?.querySelector<HTMLAnchorElement>("a")?.focus();const close=(event:KeyboardEvent)=>{if(event.key==="Escape"){setMenuOpen(false);menuButton.current?.focus();}};const outside=(event:PointerEvent)=>{if(!mobileMenu.current?.contains(event.target as Node)&&!menuButton.current?.contains(event.target as Node))setMenuOpen(false);};const query=matchMedia("(min-width:761px)");const resize=()=>{if(query.matches)setMenuOpen(false);};document.addEventListener("keydown",close);document.addEventListener("pointerdown",outside);query.addEventListener("change",resize);return()=>{document.removeEventListener("keydown",close);document.removeEventListener("pointerdown",outside);query.removeEventListener("change",resize);};},[menuOpen]);
   useEffect(()=>{
-    let cancelled=false;
-    async function boot(){
+    let cancelled=false,generation=0;
+    const motion=matchMedia("(prefers-reduced-motion: reduce)");
+    async function boot(run:number){
       if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
       const [{default:gsap},{ScrollTrigger},{default:Lenis}]=await Promise.all([
         import("gsap"), import("gsap/ScrollTrigger"), import("lenis")
       ]);
-      if(cancelled || matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+      if(cancelled || run!==generation || motion.matches)return;
       root.current?.classList.add("mk-motion");
       gsap.registerPlugin(ScrollTrigger);
       const lenis=new Lenis({lerp:.09,smoothWheel:true,wheelMultiplier:.88,anchors:true,autoRaf:false});
@@ -58,15 +59,17 @@ export default function MarketingHome(){
         gsap.from(".mk-price-line",{clipPath:"inset(0 100% 0 0)",duration:1.05,ease:"power4.inOut",scrollTrigger:{trigger:".mk-pricing",start:"top 72%"}});
         gsap.from(".mk-final-grid>*",{y:32,opacity:0,stagger:.08,duration:.9,ease:"power4.out",scrollTrigger:{trigger:".mk-final",start:"top 70%"}});
       },root);
-      const refresh=()=>{if(!cancelled)ScrollTrigger.refresh(true);};
+      const refresh=()=>{if(!cancelled&&run===generation)ScrollTrigger.refresh(true);};
       addEventListener("load",refresh,{once:true});
       void document.fonts.ready.then(refresh);
       refresh();
       return ()=>{removeEventListener("load",refresh);ctx.revert();lenis.destroy();gsap.ticker.remove(tick);root.current?.classList.remove("mk-motion");};
     }
     let cleanup:(()=>void)|undefined;
-    boot().then((c)=>{ if(cancelled)c?.(); else cleanup=c; }).catch(()=>{root.current?.classList.remove("mk-motion"); /* The complete page remains usable without motion. */ });
-    return()=>{cancelled=true;cleanup?.();};
+    const start=()=>{const run=++generation;void boot(run).then(c=>{if(cancelled||run!==generation)c?.();else cleanup=c;}).catch(()=>{if(run===generation)root.current?.classList.remove('mk-motion');});};
+    const preferenceChanged=()=>{generation++;cleanup?.();cleanup=undefined;if(!motion.matches)start();};
+    motion.addEventListener('change',preferenceChanged);start();
+    return()=>{cancelled=true;generation++;motion.removeEventListener('change',preferenceChanged);cleanup?.();};
   },[]);
 
   return <main ref={root} className="mk-site" id="top">
