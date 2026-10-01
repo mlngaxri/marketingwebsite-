@@ -57,7 +57,7 @@ export default function MarketingHome(){
           .to(".mk-hero-design-image",{scale:1.06,ease:"none"},0)
           .to(".mk-hero-site",{y:24,ease:"none"},0);
 
-        gsap.from(".work-featured .work-card",{y:35,opacity:0,stagger:.12,duration:.9,ease:"power3.out",scrollTrigger:{trigger:".work-featured-grid",start:"top 84%"}});
+        gsap.from(".work-featured .portfolio-card",{y:35,opacity:0,stagger:.12,duration:.9,ease:"power3.out",scrollTrigger:{trigger:".work-featured-grid",start:"top 84%"}});
         gsap.from(".mk-manifesto h2",{y:42,opacity:0,duration:1,ease:"power4.out",scrollTrigger:{trigger:".mk-manifesto",start:"top 72%"}});
         gsap.from(".mk-manifesto p",{y:22,opacity:0,duration:.8,ease:"power3.out",scrollTrigger:{trigger:".mk-manifesto",start:"top 64%"}});
 
