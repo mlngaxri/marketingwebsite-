@@ -6,10 +6,10 @@ Editorial marketing site with an animated website object, selected work, process
 
 Requires Node.js 22.6+. Run `npm ci`, then `npm run dev`; open http://localhost:3000. Run `npm run typecheck` and `npm run build` for checks.
 
-- `/` — marketing website
-- `/preview` — full product preview
-- `/preview/start` — Site onboarding
-- `/preview/start?package=first` — First onboarding
+- `/`: marketing website
+- `/preview`: full product preview
+- `/preview/start`: example Site onboarding
+- `/preview/start?package=first`: example First onboarding
 
 Browser tests: set `PREVIEW_URL` to the running local URL and `TEST_CHROME` to a Chromium executable, then run `npm run test:browser`. Screenshot evidence is generated under `docs/preview-evidence`.
 
@@ -21,7 +21,7 @@ The primary Client portal link uses https://fourthform-client-portal.vercel.app/
 
 ## Preview boundary
 
-Onboarding and checkout are illustrations. They do not create real accounts or charge cards. Password input is never persisted. The embedded portal uses example data and verified device storage, with no real CMS, SEO crawler, analytics or payment integration. Production service code from the larger source pack is intentionally outside these preview repositories.
+Public demo onboarding and checkout are illustrations. They do not create accounts or charge cards. Password input is never persisted. The embedded portal uses example data and verified device storage. The separate client portal repository now implements the connected CMS, search inspection, analytics, accounts and payment reconciliation. Public demo actions remain simulated.
 
 Local fonts, reduced-motion handling, image loading, responsive screens, keyboard dialogs and preview journey checks are included. See `docs/LOCAL_ACCEPTANCE.md` for the tested scope.
 
