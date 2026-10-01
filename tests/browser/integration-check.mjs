@@ -4,7 +4,7 @@ import {mkdir,writeFile,readFile} from 'node:fs/promises';
 const base=process.env.PREVIEW_URL||'http://127.0.0.1:3000',portal=process.env.PORTAL_URL||`${base}/portal-preview/index.html`;
 await mkdir('docs/preview-evidence',{recursive:true});
 const browser=await chromium.launch({executablePath:process.env.TEST_CHROME||undefined,args:['--no-sandbox']});const results=[],errors=[];
-async function check(name,fn,options={}){const c=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce',...options}),p=await c.newPage();p.setDefaultTimeout(7000);p.on('pageerror',e=>errors.push({name,error:e.message}));try{await fn(p,c);results.push({name,result:'pass'});}catch(e){results.push({name,result:'fail',detail:e.message});}finally{await c.close();}}
+async function check(name,fn,options={}){const c=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce',...options}),p=await c.newPage();p.setDefaultTimeout(7000);p.on('pageerror',e=>errors.push({name,error:e.message,stack:e.stack}));try{await fn(p,c);results.push({name,result:'pass'});}catch(e){results.push({name,result:'fail',detail:e.message});}finally{await c.close();}}
 const view=(p,name)=>p.locator(`#leftRail [data-view="${name}"],#leftRail [data-stage="${name}"]`).click();
 const fail=p=>p.evaluate(()=>{const original=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k==='fourthform-mori-local-v5')throw new DOMException('Test quota','QuotaExceededError');return original.call(this,k,v);};});
 async function cms(p,title){await view(p,'pages');await p.locator('[data-view-panel="pages"] [data-page="Home"]').click();await p.locator('[data-field="heading"]').fill(title);await p.locator('[data-ops="save-cms"]').click();}

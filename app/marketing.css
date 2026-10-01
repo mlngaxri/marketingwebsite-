@@ -148,3 +148,16 @@
 .mk-state-action:hover{border-color:var(--mk-cream)}
 .mk-state-label{flex-wrap:wrap;row-gap:8px}
 @media(max-width:760px){.mk-price-action{margin-top:20px}.mk-first .mk-text-link{margin-left:0}}
+
+/* Native sticky positioning keeps the story stable across motion preference changes. */
+.mk-site{overflow:clip}
+.mk-states-pin{position:sticky;top:0}
+.mk-site:not(.mk-motion) .mk-states-pin{position:relative}
+@media(prefers-reduced-motion:reduce){.mk-states-pin{position:relative}}
+@media(max-width:1050px){
+ .mk-states{height:auto}
+ .mk-states-pin{position:relative;height:auto;min-height:0;padding:90px 0;overflow:visible}
+ .mk-state-object{display:grid;gap:20px;height:auto}
+ .mk-state-frame{position:relative;height:400px;opacity:1!important;transform:none!important}
+ .mk-state-label span{opacity:1!important}
+}
