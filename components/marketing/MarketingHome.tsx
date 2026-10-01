@@ -5,15 +5,15 @@ import { demoSite } from "../../lib/preview/site";
 
 
 const PREVIEW_TASKS=[
-    {view:"review",number:"01",title:"Guide the design",copy:"Click a word or image to describe a change. A Direction keeps your feedback attached to the right place."},
+    {view:"review",number:"01",title:"Guide the design",copy:"Click a word or image to describe a change. Your Direction is a note for the designer, attached to the right place."},
     {view:"pages",number:"02",title:"Keep it current",copy:"Update a heading, a photo or a booking button. Your layout and typography stay intact."},
     {view:"analytics",number:"03",title:"Understand your visitors",copy:"See where visitors come from and which pages they explore. Try a different period or export the example report."},
 ];
 
 export default function MarketingHome(){
   const heroSite=useMemo(()=>demoSite("/",false),[]);
-  const monday=useMemo(()=>demoSite("/",false,"A table worth\nstaying for."),[]);
-  const saturday=useMemo(()=>demoSite("/",true,"A longer lunch.\nA little more time."),[]);
+  const usual=useMemo(()=>demoSite("/",false),[]);
+  const evening=useMemo(()=>demoSite("/",true,"An evening,\nthoughtfully prepared."),[]);
   const [menuOpen,setMenuOpen]=useState(false);
   const [previewTask,setPreviewTask]=useState("review");
   const portalFrame=useRef<HTMLIFrameElement|null>(null);
@@ -136,15 +136,15 @@ export default function MarketingHome(){
     </div></section>
 
     <section className="mk-states" id="states"><div className="mk-states-pin"><div className="mk-container mk-states-grid">
-      <div className="mk-states-copy"><span className="mk-kicker">States · Optional with Pro</span><h2 className="mk-display">Monday isn’t<br/><em>Saturday.</em></h2><p className="mk-body">A weekday menu. A weekend welcome. States are scheduled versions of selected website content. Set the days and times, then let your usual content return when the moment passes.</p><p className="mk-state-note">Explore a State in the preview. Included with Pro at A$39 / month.</p><div className="mk-state-label"><span>Monday</span><span>Saturday</span></div></div>
-      <div className="mk-state-object"><iframe tabIndex={-1} className="mk-state-frame mk-state-monday" title="Mori House on Monday" sandbox="allow-same-origin" srcDoc={monday}/><iframe tabIndex={-1} className="mk-state-frame mk-state-saturday" title="Mori House on Saturday" sandbox="allow-same-origin" srcDoc={saturday}/></div>
+      <div className="mk-states-copy"><span className="mk-kicker">States · Optional with Pro</span><h2 className="mk-display">Same design.<br/><em>Different moment.</em></h2><p className="mk-body">Welcome visitors differently when evening service begins. States are scheduled versions of selected website content. Choose the days and times; your usual content returns when the moment passes.</p><p className="mk-state-note">Included with Pro at A$39 / month.</p><Link className="mk-text-link mk-state-action" href="/preview?view=states">Try a scheduled State ↗</Link><div className="mk-state-label"><span>Usual content</span><span>Evening service</span></div></div>
+      <div className="mk-state-object"><iframe tabIndex={-1} className="mk-state-frame mk-state-monday" title="Mori House with usual content" sandbox="allow-same-origin" srcDoc={usual}/><iframe tabIndex={-1} className="mk-state-frame mk-state-saturday" title="Mori House with an Evening service State" sandbox="allow-same-origin" srcDoc={evening}/></div>
     </div></div></section>
 
     <section className="mk-pricing" id="pricing"><div className="mk-container">
       <div className="mk-pricing-head"><h2 className="mk-display">A clear scope.<br/><em>A$1,500.</em></h2><p className="mk-body">Fourthform Site includes design, build and three revision rounds. A$200 starts the project. The A$1,300 balance is due when you approve the website for launch.</p></div>
-      <div className="mk-price-line"><span>Fourthform Site</span><strong>A$1,500 <small>once</small></strong><div><p>Up to 5 custom pages, responsive design, forms, initial SEO, analytics and your client portal.</p><ul className="mk-scope-list"><li>3 revision rounds, with any number of Directions</li><li>Core included after launch</li><li>Initial Direction uses no revision round</li></ul></div></div>
+      <div className="mk-price-line"><span>Fourthform Site</span><strong>A$1,500 <small>once</small></strong><div><p>Up to 5 custom pages, responsive design, forms, search setup, analytics and your client portal.</p><ul className="mk-scope-list"><li>3 revision rounds, with any number of Directions</li><li>Core included after launch</li><li>Initial Direction uses no revision round</li></ul><a className="mk-button mk-button-dark mk-price-action" href="/preview/start">Start with Site ↗</a></div></div>
       <div className="mk-price-secondary"><div><span>Core</span><strong>Included</strong><p>Your everyday portal toolkit: content updates, basic analytics, search details and domain management.</p></div><div><span>Pro</span><strong>A$39 / month</strong><p>An optional upgrade for scheduled States, deeper analytics and search insights.</p></div></div>
-      <div className="mk-first"><span>Fourthform First</span><p>For businesses opened within the last six months. One page, around 6 to 7 sections and one revision round. Core included. <a href="/preview/start?package=first">Explore First ↗</a></p><strong>A$199</strong></div>
+      <div className="mk-first"><span>Fourthform First</span><p>For businesses opened within the last six months. One page, around 6 to 7 sections and one revision round. Core included. <a className="mk-text-link" href="/preview/start?package=first">Start with First ↗</a></p><strong>A$199</strong></div>
       <p className="mk-pricing-note">All prices are in Australian dollars. Domain registration stays with your chosen provider. Additional revision rounds are A$150 each.</p>
     </div></section>
 
@@ -155,7 +155,7 @@ export default function MarketingHome(){
       <details><summary>How do revision rounds work?<span aria-hidden="true">+</span></summary><p>Collect everything you want changed, then submit those Directions together as one round. Site includes three rounds. First includes one. Saving drafts and sending your Initial Direction use no revision round. Additional rounds are A$150 each.</p></details>
       <details><summary>What is the difference between Site and First?<span aria-hidden="true">+</span></summary><p>Site is A$1,500 for up to 5 custom pages, with A$200 to start and A$1,300 on approval. First is A$199 for one page with around 6 to 7 sections, for businesses opened within the last six months. Both include Core after launch.</p></details>
       <details><summary>What are Core and Pro?<span aria-hidden="true">+</span></summary><p>Core is the included toolkit for content updates, basic analytics, search details and domain management. Pro is optional at A$39 / month for scheduled States, deeper analytics and search insights. You can explore the Pro concept in the preview.</p></details>
-      <details><summary>What can I try in the preview?<span aria-hidden="true">+</span></summary><p>Explore the example website, add feedback, update content and try the analytics and launch journey. Drafts stay on this device. Accounts, team submissions, payments and publishing are simulated, so you can explore without signing up or entering card details.</p></details>
+      <details><summary>What can I try in the preview?<span aria-hidden="true">+</span></summary><p>Explore the example website, add feedback, update content and try the analytics and launch journey. Drafts stay on this device and can be exported from Settings. Accounts, team submissions, payments and publishing are simulated, so you can explore without signing up or entering card details.</p></details>
     </div></div></section>
     <footer className="mk-footer"><div className="mk-container"><b>fourthform</b><span>Websites, brought into form.</span><div className="mk-footer-links"><a href="#pricing">Pricing</a><a href="#questions">Questions</a><Link href="/preview">Try the portal ↗</Link></div><span>Brisbane, Australia</span></div></footer>
   </main>

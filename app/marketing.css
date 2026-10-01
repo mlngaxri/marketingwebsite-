@@ -140,3 +140,11 @@
  .mk-process-step:nth-child(4){padding-left:0;border-left:0}
  .mk-process-step:nth-child(3),.mk-process-step:nth-child(5){padding-left:18px;border-left:1px solid var(--mk-line)}
 }
+
+/* Keep a clear next action beside each product decision. */
+.mk-price-action{margin-top:24px}
+.mk-first .mk-text-link{display:inline-flex;min-height:44px;align-items:center;margin-left:8px;white-space:nowrap}
+.mk-state-action{display:inline-flex;margin-top:12px;border-color:#ffffff40;color:var(--mk-cream)}
+.mk-state-action:hover{border-color:var(--mk-cream)}
+.mk-state-label{flex-wrap:wrap;row-gap:8px}
+@media(max-width:760px){.mk-price-action{margin-top:20px}.mk-first .mk-text-link{margin-left:0}}

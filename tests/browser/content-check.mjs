@@ -13,4 +13,41 @@ await check('Review instructions explain each mode as the customer changes it',a
 await check('Marketing and portal describe Core and Pro with the same capabilities and prices',async p=>{await p.goto(base);const core=await p.locator('.mk-price-secondary>div').first().textContent(),pro=await p.locator('.mk-price-secondary>div').last().textContent();for(const term of ['content updates','basic analytics','search details','domain management'])assert.ok(core.includes(term));assert.match(pro,/A\$39 \/ month/);for(const term of ['States','deeper analytics','search insights'])assert.ok(pro.includes(term));await p.goto(portal);await p.locator('#leftRail [data-view="billing"]').click();const billing=await p.locator('[data-view-panel="billing"]').textContent();for(const term of ['Content updates','basic analytics','search details','domain management','A$200','A$1,300','A$1,500','A$39 / month','A$150'])assert.ok(billing.includes(term),term);await p.locator('[data-ops="upgrade-pro"]').click();const dialog=await p.locator('#opsModal').textContent();for(const term of ['States','deeper analytics','search insights','A$39 / month'])assert.ok(dialog.includes(term));});
 await check('New content remains readable without horizontal clipping at small widths',async p=>{await p.goto(base);for(const width of [320,390,768,1024]){await p.setViewportSize({width,height:900});for(const selector of ['.mk-hero-copy','.mk-outcomes','.mk-work-context','.mk-preview-tasks','.mk-price-line','.mk-first','.mk-faq-grid']){const size=await p.locator(selector).evaluate(e=>({width:e.clientWidth,scroll:e.scrollWidth}));assert.ok(size.scroll<=size.width+1,`${selector} clips at ${width}: ${size.scroll}/${size.width}`);}}await p.setViewportSize({width:390,height:844});await p.locator('#pricing').evaluate(e=>e.scrollIntoView({block:'start'}));await shot(p,'phone-pricing');});
 await check('Rendered marketing and portal surfaces use no em dashes',async p=>{await p.goto(base);assert.ok(!(await p.locator('body').innerText()).includes('\u2014'));assert.ok(!(await p.title()).includes('\u2014'));await p.goto(portal);for(const view of ['overview','direction','build','review','pages','analytics','seo','domains','connections','states','billing','launch','settings']){await p.evaluate(view=>showView(view),view);assert.ok(!(await p.locator('.view.active').innerText()).includes('\u2014'),view);}});
+
+await check('Pricing actions carry Site and First scope into the example checkout',async p=>{
+ for(const option of ['site','first']){
+  await p.goto(base);
+  await p.locator(option==='site'?'.mk-price-action':'.mk-first a').click();
+  await p.waitForFunction(option=>document.querySelector('.obp-story footer').textContent.includes(option==='site'?'Site · A$1,500':'First · A$199'),option);
+  await p.getByRole('button',{name:'Use the Mori House example'}).click();
+  await p.getByRole('button',{name:'Save & continue'}).click();
+  const summary=await p.locator('.obp-summary').textContent();
+  assert.ok(summary.includes(option==='site'?'Fourthform Site':'Fourthform First'));
+  assert.ok(summary.includes(option==='site'?'A$200':'A$199'));
+  if(option==='site')assert.ok(summary.includes('A$1,300'));
+  else assert.ok(!summary.includes('A$1,300'));
+ }
+});
+await check('The States story matches the working Mori House example',async p=>{
+ await p.goto(base);
+ const normalize=text=>text.replace(/\s+/g,' ').trim();
+ const usual=normalize(await p.frameLocator('.mk-state-monday').locator('h1').textContent());
+ const evening=normalize(await p.frameLocator('.mk-state-saturday').locator('h1').textContent());
+ assert.equal(usual,'Dinner, at its own pace.');
+ await p.locator('.mk-state-action').click();
+ const frame=p.frameLocator('.standalone-preview iframe');
+ await frame.locator('[data-view-panel="states"]').waitFor({state:'visible'});
+ assert.equal(await frame.locator('[data-field="stateHeading"]').inputValue(),evening);
+ assert.equal(await frame.locator('[data-field="stateName"]').inputValue(),'Evening service');
+ await frame.locator('[data-state-preview="base"]').click();
+ assert.equal(normalize(await frame.locator('[data-view-panel="states"] [data-mini-heading]').textContent()),usual);
+});
+await check('Initial Direction confirmation clearly explains the revision boundary',async p=>{
+ await p.goto(portal+'?view=direction');await p.locator('#initialSend').click();
+ const paragraphs=await p.locator('#commSend .modal>p').allTextContents();
+ assert.equal(paragraphs[0],'Sending Initial Direction uses no revision round. You can update the brief until building begins.');
+ assert.match(paragraphs[1],/No message leaves this browser/);
+ await p.locator('#commSendCancel').click();
+ assert.equal(await p.evaluate(()=>ffCommunicationFields().initialDirection.sent),false);
+});
 await writeFile('docs/preview-evidence/content-results.json',JSON.stringify({results,uncaughtErrors:errors},null,2));console.log(JSON.stringify({results,uncaughtErrors:errors},null,2));await browser.close();if(results.some(r=>r.result==='fail')||errors.length)process.exitCode=1;
