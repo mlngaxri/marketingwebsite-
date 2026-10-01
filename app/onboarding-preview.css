@@ -11,3 +11,5 @@
 .obp-design-reference p{font-size:10px;color:var(--text-secondary);margin:5px 0;line-height:1.6}
 .obp-design-reference a{display:inline-flex;align-items:center;min-height:35px;font-size:10px;text-decoration:underline;text-underline-offset:4px}
 @media(max-width:760px){.obp-design-reference{margin:20px 0 0;gap:12px;padding:12px;grid-template-columns:70px 1fr}.obp-design-reference img{width:70px;height:60px}}
+
+.obp-brand{display:inline-flex;align-items:center;gap:10px}.obp-brand .ff-mark{width:19px;height:19px}

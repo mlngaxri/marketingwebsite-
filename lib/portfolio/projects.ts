@@ -6,15 +6,15 @@ export type DesignGroup = Exclude<typeof DESIGN_FILTERS[number], "All work">;
 export type PortfolioProject = {
   id: string; title: string; sourceCategory: string; width: number; height: number; thumbnailWidth: number; source: string;
   group: DesignGroup; sector: string; line: string; description: string; techniques: string[];
-  image: string; thumbnail: string; video?: string;
+  image: string; thumbnail: string; 
 };
 
-const notes: Record<string, {group: DesignGroup; sector: string; line: string; description: string; techniques: string[]; video?: boolean}> = {
-  "monolith-hero": {group:"Immersive",sector:"Architecture",line:"A structure with a world around it.",description:"A solitary architectural form sits between water and mountains. The restrained navigation and small, precise type give the image room to establish the atmosphere.",techniques:["Cinematic composition","Restrained navigation","Spatial depth"],video:true},
+const notes: Record<string, {group: DesignGroup; sector: string; line: string; description: string; techniques: string[]}> = {
+  "monolith-hero": {group:"Immersive",sector:"Architecture",line:"A structure with a world around it.",description:"A solitary architectural form sits between water and mountains. The restrained navigation and small, precise type give the image room to establish the atmosphere.",techniques:["Cinematic composition","Restrained navigation","Spatial depth"]},
   "oyla": {group:"Editorial",sector:"Jewellery",line:"The product becomes the portrait.",description:"An oversized fashion portrait carries the jewellery story. Fine serif type, generous white space and a quiet red wordmark keep the composition focused.",techniques:["Art direction","Fine serif typography","Generous white space"]},
-  "keel": {group:"Immersive",sector:"Creative",line:"A whole world in the first frame.",description:"Metallic figures and luminous circles create an otherworldly blue landscape. The small navigation and measured headline make space for an ambitious visual idea.",techniques:["Surreal imagery","Monochrome palette","Layered composition"],video:true},
-  "playful-idea": {group:"Expressive",sector:"Creative agency",line:"Personality you can almost touch.",description:"A soft, oversized character gives a minimal agency layout its personality. Small corner details and light typography let the character become the memorable part of the page.",techniques:["Tactile character","Unexpected scale","Corner typography"],video:true},
-  "nature-ritual": {group:"Immersive",sector:"Botanical drinks",line:"Freshness, filling the frame.",description:"A botanical product scene fills the page with light, glass and greenery. Widely spaced words frame the central bottle without losing the small practical details.",techniques:["Product world building","Edge typography","Light and texture"],video:true},
+  "keel": {group:"Immersive",sector:"Creative",line:"A whole world in the first frame.",description:"Metallic figures and luminous circles create an otherworldly blue landscape. The small navigation and measured headline make space for an ambitious visual idea.",techniques:["Surreal imagery","Monochrome palette","Layered composition"]},
+  "playful-idea": {group:"Expressive",sector:"Creative agency",line:"Personality you can almost touch.",description:"A soft, oversized character gives a minimal agency layout its personality. Small corner details and light typography let the character become the memorable part of the page.",techniques:["Tactile character","Unexpected scale","Corner typography"]},
+  "nature-ritual": {group:"Immersive",sector:"Botanical drinks",line:"Freshness, filling the frame.",description:"A botanical product scene fills the page with light, glass and greenery. Widely spaced words frame the central bottle without losing the small practical details.",techniques:["Product world building","Edge typography","Light and texture"]},
   "performance-eyewear": {group:"Editorial",sector:"Eyewear",line:"A close look. A strong point of view.",description:"A tightly framed athlete and reflective eyewear create immediate impact. The oversized brand treatment and compact supporting copy balance product detail with a fashion sensibility.",techniques:["Close crop photography","Bold brand scale","Compact copy"]},
   "velorah-hero": {group:"Immersive",sector:"Agency",line:"An invitation into a quieter world.",description:"A night sky, wildflowers and a small human figure build a dreamlike setting. A tall serif headline brings a quieter voice to the scene, with a simple action beneath it.",techniques:["Atmospheric imagery","Elegant serif headline","Focused action"]},
   "prisma-landing": {group:"Editorial",sector:"Creative studio",line:"A portfolio with an editorial rhythm.",description:"Large landscape imagery and oversized type introduce the studio. The full page moves into a personal introduction and a structured presentation of the work, using space to separate each idea.",techniques:["Oversized typography","Editorial pacing","Image led storytelling"]},
@@ -33,7 +33,7 @@ const notes: Record<string, {group: DesignGroup; sector: string; line: string; d
 };
 
 export const projects: PortfolioProject[] = selection.map(project => {
-  const {video, ...note} = notes[project.id];
+  const note = notes[project.id];
   const concept=findConcept(project.id)!;
   return {...project, ...note, line:concept.headline, description:`${concept.body} ${concept.intro}`, image:`/work/${project.id}.webp`, thumbnail:`/work/${project.id}-small.webp`};
 });

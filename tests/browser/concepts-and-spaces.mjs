@@ -25,6 +25,7 @@ await check('Focused portal spaces expose their own navigation and every major f
  for(const [id,views] of Object.entries(spaces)){
   await p.goto(`${base}/portal-preview/index.html?space=${id}&view=unknown`);assert.equal(await p.locator('html').getAttribute('data-preview-space'),id);
   const visible=await p.locator('#leftRail button:not([hidden])').evaluateAll(nodes=>nodes.filter(n=>n.dataset.view||n.dataset.stage).map(n=>n.dataset.view||n.dataset.stage));assert.deepEqual(visible,views);
+  assert.ok((await p.locator('.ops-mobile-select option').evaluateAll(nodes=>nodes.map(n=>n.value))).every(view=>views.includes(view)),'Phone selectors stay focused on the space');assert.ok((await p.locator('#mobileDock button').evaluateAll(nodes=>nodes.map(n=>n.dataset.view))).every(view=>views.includes(view)),'Phone shortcuts stay focused on the space');
   for(const view of views){covered.add(view);await p.locator(`#leftRail [data-view="${view}"],#leftRail [data-stage="${view}"]`).click();await p.locator(`[data-view-panel="${view}"]`).waitFor({state:'visible'});}
   await p.setViewportSize({width:320,height:844});assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await p.setViewportSize({width:1440,height:1080});
  }
@@ -32,12 +33,14 @@ await check('Focused portal spaces expose their own navigation and every major f
 });
 await check('Focused saved drafts and preferences cannot change the complete workspace',async p=>{
  await p.goto(`${base}/portal-preview/index.html?space=content`);await p.locator('[data-field="heading"]').fill('Content-space-only heading');await p.locator('[data-ops="save-cms"]').click();await p.reload();assert.equal(await p.locator('[data-field="heading"]').inputValue(),'Content-space-only heading');
+ await p.locator('[data-ops="open-site"]').click();await p.locator('[data-view-panel="review"]').waitFor({state:'visible'});assert.equal(await p.locator('.mori-page h1').textContent(),'Content-space-only heading');assert.equal(await p.evaluate(()=>currentMode),'Browse mode');
  await p.goto(`${base}/portal-preview/index.html?view=pages`);assert.equal(await p.locator('[data-field="heading"]').inputValue(),'Dinner, at its own pace.');
  await p.goto(`${base}/portal-preview/index.html?space=design`);await p.evaluate(()=>showView('pages'));assert.equal(await p.evaluate(()=>currentView),'review');
  await p.goto(`${base}/portal-preview/index.html?space=not-real&view=pages`);assert.equal(await p.locator('html').getAttribute('data-preview-space'),null);await p.locator('[data-view-panel="pages"]').waitFor({state:'visible'});
 });
 await check('Desktop motion survives resize, reduced-motion changes and reload at a lower section',async p=>{
  await p.goto(base);await p.waitForFunction(()=>document.querySelector('.mk-site').classList.contains('mk-motion'));await p.waitForTimeout(1300);
+ const heroNode=await p.locator('.mk-hero-design-image').evaluateHandle(e=>e);await p.getByRole('button',{name:'OYLA',exact:true}).click();assert.ok(await p.locator('.mk-hero-design-image').evaluate((e,original)=>e===original,heroNode),'Switching designs must retain the animated image element');
  for(const width of [1280,1024,1440]){await p.setViewportSize({width,height:1000});await p.locator('#states').evaluate(e=>e.scrollIntoView({block:'end'}));await p.waitForFunction(()=>{const clip=getComputedStyle(document.querySelector('.mk-state-saturday')).clipPath;if(clip==='none')return true;const values=clip.match(/[\d.]+/g);return values&&Number(values[2])<3;});}
  await p.emulateMedia({reducedMotion:'reduce'});await p.waitForFunction(()=>!document.querySelector('.mk-site').classList.contains('mk-motion'));assert.equal(await p.locator('.mk-state-saturday').evaluate(e=>getComputedStyle(e).clipPath),'none');
  await p.emulateMedia({reducedMotion:'no-preference'});await p.waitForFunction(()=>document.querySelector('.mk-site').classList.contains('mk-motion'));await p.locator('#pricing').evaluate(e=>e.scrollIntoView({block:'start'}));await p.waitForTimeout(1200);await p.reload();await p.waitForTimeout(1800);
