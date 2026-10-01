@@ -92,7 +92,7 @@ export default function MarketingHome(){
         <div className="mk-hero-copy">
           <p className="mk-kicker mk-hero-eyebrow">Custom websites for independent businesses</p>
           <h1 className="mk-display"><span className="mk-hero-line"><span>Websites,</span></span><span className="mk-hero-line"><span><em>brought into form.</em></span></span></h1>
-          <p className="mk-body">A custom website that helps people understand your business and take the next step. Share ideas, review the design and manage updates in one simple workspace.</p>
+          <p className="mk-body">We design and build a custom website that helps people understand your business and take the next step. Share ideas, review the design and manage updates in one simple workspace.</p>
           <p className="mk-included">A$1,500 · 3 revision rounds · Core included</p>
           <div className="mk-hero-actions"><a className="mk-button mk-button-dark" href="/preview/start">Start a site</a><a className="mk-text-link" href="#portal">Try the workspace ↘</a></div>
         </div>
