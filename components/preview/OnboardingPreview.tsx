@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import {findProject, type PortfolioProject} from "../../lib/portfolio/projects";
+import {canonicalReferenceLinks, findProject, type PortfolioProject} from "../../lib/portfolio/projects";
 import "../../app/onboarding-preview.css";
 const GOALS = ["Book", "Buy", "Visit", "Contact us", "Understand us"];
 const FEELS = ["Quiet", "Bold", "Warm", "Minimal", "Editorial", "Playful", "Refined"];
@@ -25,7 +25,7 @@ export default function OnboardingPreview() {
   useEffect(()=>{
     const params=new URLSearchParams(location.search),project=findProject(params.get("reference"));setFirst(params.get("package")==="first");setReference(project);
     let restored=empty,hasSaved=false;
-    try{const stored=JSON.parse(localStorage.getItem(STORAGE)||"null");if(typeof stored?.name==="string"&&typeof stored.description==="string"){restored={...empty,name:stored.name.slice(0,100),description:stored.description.slice(0,1000),links:typeof stored.links==="string"?stored.links.slice(0,2000):"",note:typeof stored.note==="string"?stored.note.slice(0,500):"",goals:Array.isArray(stored.goals)?stored.goals.filter((g:unknown)=>typeof g==="string"&&GOALS.includes(g)):[],feels:Array.isArray(stored.feels)?stored.feels.filter((g:unknown)=>typeof g==="string"&&FEELS.includes(g)):[]};hasSaved=true;}}catch{}
+    try{const stored=JSON.parse(localStorage.getItem(STORAGE)||"null");if(typeof stored?.name==="string"&&typeof stored.description==="string"){restored={...empty,name:stored.name.slice(0,100),description:stored.description.slice(0,1000),links:typeof stored.links==="string"?canonicalReferenceLinks(stored.links).slice(0,2000):"",note:typeof stored.note==="string"?stored.note.slice(0,500):"",goals:Array.isArray(stored.goals)?stored.goals.filter((g:unknown)=>typeof g==="string"&&GOALS.includes(g)):[],feels:Array.isArray(stored.feels)?stored.feels.filter((g:unknown)=>typeof g==="string"&&FEELS.includes(g)):[]};hasSaved=true;}}catch{}
     const links=referenceLinks(restored.links,project),added=links!==restored.links;setBrief({...restored,links});setSaved(hasSaved&&!added);setDirty(added);if(project&&!restored.links.includes(project.source)&&!added)setError("Your links field is full. Make room for the selected design reference before saving.");
   },[]);
   useEffect(()=>{if(!didMount.current){didMount.current=true;return}const title=document.querySelector<HTMLElement>(".obp-content h2");if(title){title.tabIndex=-1;title.focus({preventScroll:true});if(matchMedia('(max-width:760px)').matches)title.scrollIntoView({block:'start',behavior:'auto'});}},[step,exit,payment]);

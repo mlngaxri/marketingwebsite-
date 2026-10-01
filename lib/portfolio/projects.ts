@@ -1,4 +1,5 @@
 import selection from "./selection.json";
+import {findConcept} from "./concepts";
 
 export const DESIGN_FILTERS = ["All work", "Immersive", "Editorial", "Product", "Expressive"] as const;
 export type DesignGroup = Exclude<typeof DESIGN_FILTERS[number], "All work">;
@@ -33,8 +34,14 @@ const notes: Record<string, {group: DesignGroup; sector: string; line: string; d
 
 export const projects: PortfolioProject[] = selection.map(project => {
   const {video, ...note} = notes[project.id];
-  return {...project, ...note, image:`/work/${project.id}.webp`, thumbnail:`/work/${project.id}-small.webp`, ...(video?{video:`/work/${project.id}.mp4`}:{})};
+  const concept=findConcept(project.id)!;
+  return {...project, ...note, line:concept.headline, description:`${concept.body} ${concept.intro}`, image:`/work/${project.id}.webp`, thumbnail:`/work/${project.id}-small.webp`};
 });
 export const featuredProjects = ["monolith-hero", "oyla", "playful-idea", "nature-ritual"].map(id => projects.find(project=>project.id===id)!);
 export const heroProjects = ["monolith-hero", "oyla", "keel"].map(id => projects.find(project=>project.id===id)!);
 export function findProject(id: string|null) { return projects.find(project=>project.id===id); }
+
+// Keep design references from earlier saved briefs pointed at the current studio collection.
+export function canonicalReferenceLinks(value:string){
+ return value.replace(/https?:\/\/[^\s]+/g,link=>{try{const url=new URL(link),project=findProject(url.searchParams.get('prompt'));return project&&url.hostname.endsWith('.ai')&&url.pathname==='/'?project.source:link;}catch{return link;}});
+}

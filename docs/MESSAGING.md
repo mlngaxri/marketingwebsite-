@@ -4,7 +4,7 @@ Fourthform designs and builds custom websites for independent businesses. The cl
 
 ## Content order
 
-Explain the offer and intended audience first. Show the visual range through selected designs from the user's MotionSites portfolio. Label the collection as design studies, retain a source link and let a chosen design become a brief reference. Show the value through concrete visitor actions. Use Mori House to demonstrate the working portal. Explain the four stages, let visitors try the portal, then make the scope and pricing clear.
+Explain the offer and intended audience first. Show the visual range through selected designs from the Fourthform studio collection. Label the collection as fictional studio concepts, link to the live concept and let a chosen design become a brief reference. Show the value through concrete visitor actions. Use Mori House to demonstrate the working portal. Explain the four stages, let visitors explore four independent portal spaces in any order, then make the scope and pricing clear.
 
 ## Product terms
 

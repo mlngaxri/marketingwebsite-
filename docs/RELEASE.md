@@ -8,6 +8,8 @@ Final acceptance runs in GitHub validation: production build, TypeScript and ren
 
 Deployment remains the existing Vercel/GitHub project configuration. These changes do not link or manually deploy a Vercel project.
 
-The marketing portfolio now contains 20 selected MotionSites studies, source links, large previews, design filters, optional local motion clips and a reference-to-brief flow. The homepage uses selected portfolio imagery and a staggered featured collection.
+The marketing portfolio now contains 20 selected Fourthform studies, source links, large previews, design filters, live concept pages and a reference-to-brief flow. The homepage uses selected portfolio imagery and a staggered featured collection.
 
 Project, Website and Account navigation now group the portal tools by purpose. Revision summaries and guidance follow the actual preview lifecycle. Shared links preserve the active view, and online links and portfolio references use consistent labels.
+
+Fourthform is the sole agency brand. The portfolio now includes 20 live concepts with coherent, business-specific copy and locally validated enquiry forms. Four independent portal spaces show every major capability without a required tour. Drafts are isolated between spaces and the complete workspace. Desktop scroll effects use responsive contexts and refresh after restored-page and image-loading events.

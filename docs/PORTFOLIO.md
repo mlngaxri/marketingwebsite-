@@ -1,9 +1,9 @@
-# MotionSites portfolio selection
+# Fourthform studio collection
 
-Twenty public website previews were selected from the user-owned MotionSites portfolio after reviewing 49 candidates. The collection balances immersive, editorial, product and expressive designs. Source project names and links are preserved in `lib/portfolio/selection.json`. Design descriptions are visual observations, not client outcomes.
+Twenty responsive live concept websites express the range of the Fourthform studio. Each has a clear business offer, a coherent headline, three relevant areas to explore and an example enquiry interaction. Original visual assets are used as art, with the old interface copy removed from those crops.
 
-The homepage features four studies and a three-design hero selector. `/work` contains all 20, category filters and accessible large previews. A selected reference is appended to onboarding links without replacing an existing brief. Four ten-second, silent motion clips load only when requested. All gallery media is local, optimized and independent of the source host.
+The concepts are fictional businesses and design studies, not claimed client commissions. There are no fabricated testimonials, statistics, performance results or awards. Website copy lives in `lib/portfolio/concepts.json`. Four visual families support each business: immersive landscapes, editorial portraits, product compositions and expressive shapes.
 
-Visual techniques applied to Fourthform include cinematic imagery, large mixed typography, staggered editorial grids, contrast between sections, restrained navigation, subtle perspective on pointer hover and motion that respects the visitor's preference. Native dialogs support keyboard navigation, focus return and direct project links.
+Every concept has a direct `/work/[id]` URL, an embedded live gallery preview and a reference-to-brief action. Enquiry forms validate locally and show a response without storing or sending personal details. The static gallery posters are rendered from the new live concepts.
 
-Public preview metadata and preview images were used. Gated prompts, paid source code and private account data were not acquired.
+The four-corner frame is the Fourthform signature. It appears in the wordmark, gallery, hero frame, portal navigation and four preview spaces. Motion complements the content and respects reduced-motion settings.

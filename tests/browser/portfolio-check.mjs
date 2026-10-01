@@ -15,9 +15,9 @@ await check('The collection has 20 unique local previews with source and referen
  for(const card of await page.locator('.portfolio-card').all()){const size=await card.evaluate(element=>({card:element.getBoundingClientRect().width,image:element.querySelector('img').getBoundingClientRect().width}));assert.ok(size.image>=size.card*.95,'The design must fill its gallery card');}
  for(const card of await page.locator('.portfolio-card').all()){
   const id=await card.getAttribute('data-project');await card.locator('button').click();
-  await page.locator('.work-dialog[open]').waitFor();assert.equal(await page.locator('.work-source').getAttribute('href'),`https://motionsites.ai/?prompt=${id}`);
+  await page.locator('.work-dialog[open]').waitFor();assert.equal(await page.locator('.work-source').getAttribute('href'),`https://fourthform-marketing.vercel.app/work/${id}`);
   assert.equal(await page.locator('.work-reference').getAttribute('href'),`/preview/start?reference=${id}`);
-  await page.locator('.work-dialog-media img').evaluate(image=>image.decode());
+  await page.frameLocator('.work-dialog-media iframe').locator('h1').waitFor();
   assert.ok((await page.locator('#work-dialog-description').textContent()).length>80);
   await page.getByRole('button',{name:'Close design preview'}).click();
  }
@@ -41,29 +41,28 @@ await check('Direct design links open the right preview and unknown designs rema
  await page.goto(base+'/work?project=oyla');await page.locator('.work-dialog[open]').waitFor();assert.equal(await page.locator('#work-dialog-title').textContent(),'OYLA');await page.getByRole('button',{name:'Close design preview'}).click();
  await page.goto(base+'/work?project=unknown');assert.equal(await page.locator('.work-dialog[open]').count(),0);assert.equal(await page.locator('.portfolio-card').count(),20);
 });
-await check('Motion clips load only after an explicit play request',async page=>{
- const clips=[];page.on('request',request=>{if(request.url().includes('.mp4'))clips.push(request.url());});
- await page.goto(base+'/work');await page.getByRole('button',{name:'Explore Monolith Hero',exact:true}).click();assert.equal(clips.length,0);
- await page.getByRole('button',{name:'Play motion preview',exact:true}).click();await page.locator('.work-dialog video').evaluate(video=>new Promise((resolve,reject)=>{if(video.readyState>=1)return resolve();video.addEventListener('loadedmetadata',resolve,{once:true});video.addEventListener('error',reject,{once:true});}));
- assert.ok(clips.length>0);assert.ok(await page.locator('.work-dialog video').evaluate(video=>video.videoWidth>0&&video.duration>0));
- await page.getByRole('button',{name:'Back to still preview'}).click();assert.equal(await page.locator('.work-dialog video').count(),0);
+await check('Live concepts open inside the gallery and offer a still overview',async page=>{
+ await page.goto(base+'/work');await page.getByRole('button',{name:'Explore Monolith Hero',exact:true}).click();
+ const frame=page.frameLocator('.work-dialog-media iframe');await frame.locator('h1').waitFor();assert.equal(await frame.locator('h1').textContent(),'Architecture for the way you live.');
+ await page.getByRole('button',{name:'Show the design overview',exact:true}).click();await page.locator('.work-dialog-media img').evaluate(image=>image.decode());
+ await page.getByRole('button',{name:'Explore the live website',exact:true}).click();await frame.locator('h1').waitFor();
 });
 await check('A chosen design survives the example brief and seeds Initial Direction',async page=>{
  await page.goto(base+'/work?project=oyla');await page.locator('.work-reference').click();await page.locator('.obp-design-reference').waitFor();
- assert.match(await page.locator('.obp-design-reference').textContent(),/OYLA/);await page.getByRole('button',{name:'Use the Mori House example'}).click();assert.match(await page.locator('textarea').nth(1).inputValue(),/motionsites.ai\/\?prompt=oyla/);
+ assert.match(await page.locator('.obp-design-reference').textContent(),/OYLA/);await page.getByRole('button',{name:'Use the Mori House example'}).click();assert.match(await page.locator('textarea').nth(1).inputValue(),/fourthform-marketing.vercel.app\/work\/oyla/);
  await page.getByRole('button',{name:'Save & continue'}).click();await page.getByRole('button',{name:'Explore example checkout'}).click();await page.getByRole('link',{name:'Open Initial Direction'}).click();
- await page.locator('[data-initial-text="links"]').waitFor();assert.match(await page.locator('[data-initial-text="links"]').inputValue(),/motionsites.ai\/\?prompt=oyla/);
+ await page.locator('[data-initial-text="links"]').waitFor();assert.match(await page.locator('[data-initial-text="links"]').inputValue(),/fourthform-marketing.vercel.app\/work\/oyla/);
 });
 await check('Choosing another design preserves an existing business brief and links',async page=>{
  await page.goto(base+'/preview/start');await page.evaluate(()=>localStorage.setItem('ff-preview-onboarding-v1',JSON.stringify({name:'Existing business',description:'Existing description',links:'https://example.com',goals:['Book'],feels:['Warm'],note:'Existing note'})));
  await page.goto(base+'/preview/start?reference=keel');await page.getByRole('button',{name:'Continue with Google'}).click();assert.equal(await page.getByRole('textbox',{name:'Business name',exact:true}).inputValue(),'Existing business');
- assert.equal(await page.locator('textarea').nth(1).inputValue(),'https://example.com\nhttps://motionsites.ai/?prompt=keel');await page.getByRole('button',{name:'Save & continue'}).click();
+ assert.equal(await page.locator('textarea').nth(1).inputValue(),'https://example.com\nhttps://fourthform-marketing.vercel.app/work/keel');await page.getByRole('button',{name:'Save & continue'}).click();
  const brief=await page.evaluate(()=>JSON.parse(localStorage.getItem('ff-preview-onboarding-v1')));assert.equal(brief.note,'Existing note');assert.deepEqual(brief.goals,['Book']);
 });
 await check('A new reference reaches an existing editable portal brief without replacing its notes',async page=>{
  await page.goto(base+'/portal-preview/index.html?view=direction');await page.locator('[data-initial-text="business"]').fill('Keep my existing business explanation.');await page.locator('#saveBtn').click();
  await page.goto(base+'/preview/start?reference=oyla');await page.getByRole('button',{name:'Use the Mori House example'}).click();await page.getByRole('button',{name:'Save & continue'}).click();await page.getByRole('button',{name:'Explore example checkout'}).click();await page.getByRole('link',{name:'Open Initial Direction'}).click();
- assert.equal(await page.locator('[data-initial-text="business"]').inputValue(),'Keep my existing business explanation.');assert.match(await page.locator('[data-initial-text="portfolio-links"]').inputValue(),/prompt=oyla/);await page.locator('#saveBtn').click();await page.reload();assert.equal(await page.locator('[data-initial-text="portfolio-links"]').count(),1);
+ assert.equal(await page.locator('[data-initial-text="business"]').inputValue(),'Keep my existing business explanation.');assert.match(await page.locator('[data-initial-text="portfolio-links"]').inputValue(),/work\/oyla/);await page.locator('#saveBtn').click();await page.reload();assert.equal(await page.locator('[data-initial-text="portfolio-links"]').count(),1);
 });
 await check('Portfolio, dialog and reference brief reflow at small widths',async page=>{
  for(const width of [320,390,768,1024]){

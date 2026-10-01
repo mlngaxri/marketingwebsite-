@@ -10,13 +10,14 @@ const site=compile('lib/preview/site.ts',{});
 const home=compile('components/marketing/MarketingHome.tsx',{'../../lib/preview/site':site,'next/link':{default:({children,...props})=>React.createElement('a',props,children),__esModule:true}}).default;
 const html=renderToStaticMarkup(React.createElement(home));
 test('marketing has one focusable skip target and six native FAQ disclosures',()=>{assert.equal((html.match(/Skip to content/g)||[]).length,1);assert.match(html,/id="main-content" tabindex="-1"/);assert.equal((html.match(/<details>/g)||[]).length,6);assert.equal((html.match(/<summary>/g)||[]).length,6);});
-test('marketing retains onboarding and same-origin embedded preview routes',()=>{assert.match(html,/href="\/preview\/start"/);assert.match(html,/href="\/preview\/start\?package=first"/);assert.match(html,/src="\/portal-preview\/index.html"/);assert.match(html,/A\$200/);assert.match(html,/A\$1,300/);});
+test('marketing retains onboarding and same-origin embedded preview routes',()=>{assert.match(html,/href="\/preview\/start"/);assert.match(html,/href="\/preview\/start\?package=first"/);assert.match(html,/src="\/portal-preview\/index.html\?space=design&amp;view=review"/);assert.match(html,/A\$200/);assert.match(html,/A\$1,300/);});
 
 test('marketing includes an accessible closed mobile navigation',()=>{assert.match(html,/aria-controls="mk-mobile-menu" aria-expanded="false"/);assert.match(html,/id="mk-mobile-menu" hidden=""/);assert.match(html,/href="#questions"/);});
 
 test('the offer, audience, product terms and pricing are explained in rendered content',()=>{
  for(const copy of ['Custom websites for independent businesses','We design and build','A Direction is your input','Fourthform Site','Fourthform First','A$199','A$39 / month','A$150','content updates, basic analytics, search details and domain management','Direction','Build','Review','Launch'])assert.ok(html.includes(copy),copy);
  assert.match(html,/Example data/);assert.match(html,/design studies/);
+ assert.equal((html.match(/data-preview-space=/g)||[]).length,4);
  assert.equal((html.match(/data-preview-task=/g)||[]).length,3);
  assert.ok(!html.includes('heatmaps'),'unrepresented capabilities are not sold as demonstrated features');
 });

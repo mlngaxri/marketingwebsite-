@@ -4,13 +4,8 @@ import Link from "next/link";
 import { demoSite } from "../../lib/preview/site";
 import {heroProjects} from "../../lib/portfolio/projects";
 import FeaturedWork from "../work/FeaturedWork";
+import {previewSpaces} from "../../lib/preview/spaces";
 
-
-const PREVIEW_TASKS=[
-    {view:"review",number:"01",title:"Guide the design",copy:"Click a word or image to describe a change. Your Direction is a note for the designer, attached to the right place."},
-    {view:"pages",number:"02",title:"Keep it current",copy:"Update a heading, a photo or a booking button. Your layout and typography stay intact."},
-    {view:"analytics",number:"03",title:"Understand your visitors",copy:"See where visitors come from and which pages they explore. Try a different period or export the example report."},
-];
 
 export default function MarketingHome(){
   const [heroIndex,setHeroIndex]=useState(0);
@@ -18,13 +13,20 @@ export default function MarketingHome(){
   const usual=useMemo(()=>demoSite("/",false),[]);
   const evening=useMemo(()=>demoSite("/",true,"An evening,\nthoughtfully prepared."),[]);
   const [menuOpen,setMenuOpen]=useState(false);
-  const [previewTask,setPreviewTask]=useState("review");
-  const portalFrame=useRef<HTMLIFrameElement|null>(null);
-  function openPreviewTask(view:string,scroll=false){
-    setPreviewTask(view);
-    portalFrame.current?.contentWindow?.postMessage({type:"fourthform:preview-view",view},location.origin);
-    if(scroll&&matchMedia("(max-width:760px)").matches)portalFrame.current?.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+  const [previewSpace,setPreviewSpace]=useState<string>('design');
+  const [visitedSpaces,setVisitedSpaces]=useState<string[]>(['design']);
+  const [previewViews,setPreviewViews]=useState<Record<string,string>>({design:'review',content:'pages',insight:'analytics',launch:'launch'});
+  const activeSpace=previewSpaces.find(space=>space.id===previewSpace)!;
+  const previewTask=previewViews[previewSpace];
+  const portalFrames=useRef<Record<string,HTMLIFrameElement|null>>({});
+  function openPreviewTask(view:string){
+    setPreviewViews(previous=>({...previous,[previewSpace]:view}));
+    portalFrames.current[previewSpace]?.contentWindow?.postMessage({type:'fourthform:preview-view',view},location.origin);
   }
+  function openPreviewSpace(id:string){
+    setPreviewSpace(id);setVisitedSpaces(previous=>previous.includes(id)?previous:[...previous,id]);
+  }
+  useEffect(()=>{const receive=(event:MessageEvent)=>{if(event.origin!==location.origin||event.data?.type!=='fourthform:preview-active')return;const space=previewSpaces.find(item=>portalFrames.current[item.id]?.contentWindow===event.source);if(!space)return;setPreviewViews(previous=>({...previous,[space.id]:event.data.view}));};addEventListener('message',receive);return()=>removeEventListener('message',receive);},[]);
   const menuButton=useRef<HTMLButtonElement|null>(null);
   const mobileMenu=useRef<HTMLDivElement|null>(null);
   const root=useRef<HTMLElement|null>(null);
@@ -39,23 +41,29 @@ export default function MarketingHome(){
         import("gsap"), import("gsap/ScrollTrigger"), import("lenis")
       ]);
       if(cancelled || run!==generation || motion.matches)return;
-      root.current?.classList.add("mk-motion");
+
       gsap.registerPlugin(ScrollTrigger);
       const lenis=new Lenis({lerp:.09,smoothWheel:true,wheelMultiplier:.88,anchors:true,autoRaf:false});
       lenis.on("scroll",ScrollTrigger.update);
       const tick = (t: number) => lenis.raf(t*1000);
       gsap.ticker.add(tick);
       gsap.ticker.lagSmoothing(0);
+      const responsive=gsap.matchMedia();
       const ctx=gsap.context(()=>{
+        root.current?.classList.add("mk-motion");
         const intro=gsap.timeline({defaults:{ease:"power4.out"}});
-        intro.from(".mk-hero-line>span",{yPercent:112,duration:1.05,stagger:.07})
+        if(scrollY<innerHeight*.5)intro.from(".mk-hero-line>span",{yPercent:112,duration:1.05,stagger:.07})
           .from(".mk-hero-copy .mk-body",{opacity:0,y:18,duration:.72},.24)
           .from(".mk-hero-actions",{opacity:0,y:14,duration:.62},.34)
           .from(".mk-hero-site",{opacity:0,y:52,scale:.955,duration:1.1,ease:"expo.out"},.12);
 
-        if(matchMedia("(min-width:1051px)").matches)gsap.timeline({scrollTrigger:{trigger:".mk-hero-wrap",start:"top top",end:"bottom bottom",scrub:1.1}})
-          .to(".mk-hero-design-image",{scale:1.06,ease:"none"},0)
-          .to(".mk-hero-site",{y:24,ease:"none"},0);
+        responsive.add('(min-width:1051px)',()=>{
+          gsap.timeline({scrollTrigger:{trigger:'.mk-hero-wrap',start:'top top',end:'bottom bottom',scrub:1.1}})
+            .to('.mk-hero-design-image',{scale:1.06,ease:'none'},0).to('.mk-hero-site',{y:24,ease:'none'},0);
+          gsap.timeline({scrollTrigger:{trigger:'.mk-states',start:'top top',end:'bottom bottom',scrub:1}})
+            .fromTo('.mk-state-saturday',{clipPath:'inset(0 0 100% 0)'},{clipPath:'inset(0 0 0% 0)',ease:'none'},.12)
+            .to('.mk-state-label span:first-child',{opacity:.28},.18).to('.mk-state-label span:last-child',{opacity:1},.18);
+        });
 
         gsap.from(".work-featured .portfolio-card",{y:35,opacity:0,stagger:.12,duration:.9,ease:"power3.out",scrollTrigger:{trigger:".work-featured-grid",start:"top 84%"}});
         gsap.from(".mk-manifesto h2",{y:42,opacity:0,duration:1,ease:"power4.out",scrollTrigger:{trigger:".mk-manifesto",start:"top 72%"}});
@@ -66,19 +74,16 @@ export default function MarketingHome(){
 
         gsap.fromTo(".mk-preview-shell",{scale:.945,y:62,opacity:.45},{scale:1,y:0,opacity:1,ease:"none",scrollTrigger:{trigger:".mk-portal",start:"top 72%",end:"top 22%",scrub:1.05}});
 
-        const states=gsap.timeline({scrollTrigger:{trigger:".mk-states",start:"top top",end:"bottom bottom",scrub:1}});
-        states.fromTo(".mk-state-saturday",{clipPath:"inset(0 0 100% 0)"},{clipPath:"inset(0 0 0% 0)",ease:"none"},.12)
-          .to(".mk-state-label span:first-child",{opacity:.28},.18)
-          .to(".mk-state-label span:last-child",{opacity:1},.18);
-
         gsap.from(".mk-price-line",{clipPath:"inset(0 100% 0 0)",duration:1.05,ease:"power4.inOut",scrollTrigger:{trigger:".mk-pricing",start:"top 72%"}});
         gsap.from(".mk-final-grid>*",{y:32,opacity:0,stagger:.08,duration:.9,ease:"power4.out",scrollTrigger:{trigger:".mk-final",start:"top 70%"}});
       },root);
       const refresh=()=>{if(!cancelled&&run===generation)ScrollTrigger.refresh(true);};
       addEventListener("load",refresh,{once:true});
+      addEventListener("pageshow",refresh);
+      addEventListener("fourthform:layout",refresh);
       void document.fonts.ready.then(refresh);
       refresh();
-      return ()=>{removeEventListener("load",refresh);ctx.revert();lenis.destroy();gsap.ticker.remove(tick);root.current?.classList.remove("mk-motion");};
+      return ()=>{removeEventListener("load",refresh);removeEventListener("pageshow",refresh);removeEventListener("fourthform:layout",refresh);responsive.revert();ctx.revert();lenis.destroy();gsap.ticker.remove(tick);root.current?.classList.remove("mk-motion");};
     }
     let cleanup:(()=>void)|undefined;
     const start=()=>{const run=++generation;void boot(run).then(c=>{if(cancelled||run!==generation)c?.();else cleanup=c;}).catch(()=>{if(run===generation)root.current?.classList.remove('mk-motion');});};
@@ -89,7 +94,7 @@ export default function MarketingHome(){
 
   return <main ref={root} className="mk-site" id="top">
     <a className="skip-link" href="#main-content">Skip to content</a>
-    <nav className="mk-nav" aria-label="Primary navigation"><a className="mk-wordmark" href="#top">fourthform</a><div className="mk-nav-links"><Link href="/work">Work</Link><a href="#process">Process</a><a href="#portal">Portal</a><a href="#states">States</a><a href="https://fourthform-client-portal.vercel.app/">Client portal ↗</a><a href="#pricing">Pricing</a></div><button ref={menuButton} className="mk-menu-toggle" type="button" aria-controls="mk-mobile-menu" aria-expanded={menuOpen} aria-label={menuOpen?"Close navigation":"Open navigation"} onClick={()=>setMenuOpen(open=>!open)}>{menuOpen?"Close":"Menu"}</button><a className="mk-button mk-button-dark" href="/preview/start">Start a site</a><div ref={mobileMenu} className="mk-mobile-menu" id="mk-mobile-menu" hidden={!menuOpen} onBlur={event=>{if(event.relatedTarget&&!event.currentTarget.contains(event.relatedTarget)&&event.relatedTarget!==menuButton.current)setMenuOpen(false);}}>{[["/work","Work"],["#process","Process"],["#portal","Portal preview"],["#states","States"],["#pricing","Pricing"],["#questions","Questions"],["https://fourthform-client-portal.vercel.app/","Client portal ↗"]].map(([href,label])=><a key={href} href={href} onClick={()=>{setMenuOpen(false);menuButton.current?.focus();}}>{label}</a>)}</div></nav>
+    <nav className="mk-nav" aria-label="Primary navigation"><a className="mk-wordmark" href="#top"><span className="ff-mark" aria-hidden="true"/>fourthform</a><div className="mk-nav-links"><Link href="/work">Work</Link><a href="#process">Process</a><a href="#portal">Portal</a><a href="#states">States</a><a href="https://fourthform-client-portal.vercel.app/">Client portal ↗</a><a href="#pricing">Pricing</a></div><button ref={menuButton} className="mk-menu-toggle" type="button" aria-controls="mk-mobile-menu" aria-expanded={menuOpen} aria-label={menuOpen?"Close navigation":"Open navigation"} onClick={()=>setMenuOpen(open=>!open)}>{menuOpen?"Close":"Menu"}</button><a className="mk-button mk-button-dark" href="/preview/start">Start a site</a><div ref={mobileMenu} className="mk-mobile-menu" id="mk-mobile-menu" hidden={!menuOpen} onBlur={event=>{if(event.relatedTarget&&!event.currentTarget.contains(event.relatedTarget)&&event.relatedTarget!==menuButton.current)setMenuOpen(false);}}>{[["/work","Work"],["#process","Process"],["#portal","Portal preview"],["#states","States"],["#pricing","Pricing"],["#questions","Questions"],["https://fourthform-client-portal.vercel.app/","Client portal ↗"]].map(([href,label])=><a key={href} href={href} onClick={()=>{setMenuOpen(false);menuButton.current?.focus();}}>{label}</a>)}</div></nav>
 
     <section className="mk-hero-wrap" id="main-content" tabIndex={-1}>
       <div className="mk-hero"><div className="mk-container mk-hero-grid">
@@ -100,7 +105,7 @@ export default function MarketingHome(){
           <p className="mk-included">A$1,500 · 3 revision rounds · Core included</p>
           <div className="mk-hero-actions"><a className="mk-button mk-button-dark" href="/preview/start">Start a site</a><Link className="mk-text-link" href="/work">Explore the work ↗</Link></div>
         </div>
-        <div className="mk-hero-stage"><div className="mk-hero-site"><img className="mk-hero-design-image" key={heroProject.id} src={heroProject.image} width={heroProject.width} height={heroProject.height} alt={`${heroProject.title} website design from the MotionSites portfolio`} fetchPriority="high"/><Link className="mk-hero-design-link" href={`/work?project=${heroProject.id}`} aria-label={`Explore ${heroProject.title}`}><span>Explore design ↗</span></Link></div><div className="mk-hero-design-meta" aria-live="polite"><span>{heroProject.title} · {heroProject.sector}</span><span>{String(heroIndex+1).padStart(2,"0")} / 03</span></div><div className="mk-hero-designs" role="group" aria-label="Featured website designs">{heroProjects.map((project,i)=><button type="button" key={project.id} aria-pressed={heroIndex===i} onClick={()=>setHeroIndex(i)}><img src={project.thumbnail} width="39" height="30" alt=""/>{project.title}</button>)}</div><Link className="mk-hero-all-work" href="/work">20 selected designs from MotionSites <span aria-hidden="true">↗</span></Link></div>
+        <div className="mk-hero-stage"><div className="mk-hero-site"><img className="mk-hero-design-image" key={heroProject.id} src={heroProject.image} width={heroProject.width} height={heroProject.height} alt={`${heroProject.title} website design by Fourthform`} onLoad={()=>dispatchEvent(new Event("fourthform:layout"))} fetchPriority="high"/><Link className="mk-hero-design-link" href={`/work?project=${heroProject.id}`} aria-label={`Explore ${heroProject.title}`}><span>Explore design ↗</span></Link></div><div className="mk-hero-design-meta" aria-live="polite"><span>{heroProject.title} · {heroProject.sector}</span><span>{String(heroIndex+1).padStart(2,"0")} / 03</span></div><div className="mk-hero-designs" role="group" aria-label="Featured website designs">{heroProjects.map((project,i)=><button type="button" key={project.id} aria-pressed={heroIndex===i} onClick={()=>setHeroIndex(i)}><img src={project.thumbnail} width="39" height="30" alt=""/>{project.title}</button>)}</div><Link className="mk-hero-all-work" href="/work">20 Fourthform website concepts <span aria-hidden="true">↗</span></Link></div>
       </div></div>
     </section>
 
@@ -129,10 +134,11 @@ export default function MarketingHome(){
     </div></section>
 
     <section className="mk-portal" id="portal"><div className="mk-container">
-      <div className="mk-portal-head"><h2 className="mk-display">See what’s changing.<br/><em>Know what’s next.</em></h2><p className="mk-body">Your client portal connects the brief, the website and the next decision. Try these three everyday tasks in the Mori House example.</p></div>
-      <div className="mk-preview-tasks" role="group" aria-label="Choose a portal preview task">{PREVIEW_TASKS.map(task=><button type="button" className="mk-preview-task" key={task.view} data-preview-task={task.view} aria-pressed={previewTask===task.view} aria-controls="marketing-portal" onClick={()=>openPreviewTask(task.view,true)}><span className="mk-task-number">{task.number}<span aria-hidden="true">↗</span></span><strong>{task.title}</strong><span className="mk-task-copy">{task.copy}</span></button>)}</div>
-      <div className="mk-preview-shell"><div className="mk-preview-top"><span>Interactive portal preview</span><span>Example data · <Link href={`/preview?view=${previewTask}`}>Open full preview ↗</Link></span></div><iframe ref={portalFrame} id="marketing-portal" className="mk-portal-frame" src="/portal-preview/index.html" title="Interactive Fourthform portal preview" loading="lazy" onLoad={()=>openPreviewTask(previewTask)}/></div>
-      <div className="mk-preview-caption"><p>Explore freely. Edits stay on this device. Sending, payments and launch are simulated.</p><Link className="mk-text-link" href={`/preview?view=${previewTask}`}>Open full preview ↗</Link></div>
+      <div className="mk-portal-head"><div><span className="mk-kicker">Your workspace, in four forms</span><h2 className="mk-display">A place for each part.<br/><em>Space to explore.</em></h2></div><p className="mk-body">From the first idea to everyday updates, everything has a place. Choose a preview space and try what interests you. Each keeps its own example draft.</p></div>
+      <div className="mk-preview-tasks" role="group" aria-label="Choose a portal preview space">{previewSpaces.map(space=><button type="button" className="mk-preview-task" key={space.id} data-preview-space={space.id} aria-pressed={previewSpace===space.id} aria-controls={`marketing-portal-${space.id}`} onClick={()=>openPreviewSpace(space.id)}><span className="mk-task-number">{space.number}<span className="ff-mark" aria-hidden="true"/></span><strong>{space.title}</strong><span className="mk-task-copy">{space.copy}</span><span className="mk-space-features">{space.features.join(' · ')}</span></button>)}</div>
+      <div className="mk-preview-features" role="group" aria-label={`Explore ${activeSpace.label}`}>{({design:[['direction','Direction'],['build','Build'],['review','Review']],content:[['pages','Pages'],['states','States']],insight:[['analytics','Analytics'],['seo','Search'],['connections','Connections']],launch:[['launch','Launch'],['domains','Domains'],['billing','Billing'],['settings','Settings']]} as Record<string,string[][]>)[previewSpace].map(([view,label])=><button type="button" key={view} data-preview-task={view} aria-pressed={previewTask===view} onClick={()=>openPreviewTask(view)}>{label}</button>)}<span>Explore in any order.</span></div>
+      <div className="mk-preview-shell"><div className="mk-preview-top"><span>{activeSpace.label} · Interactive preview</span><span>Example data · <Link href={`/preview?space=${previewSpace}&view=${previewTask}`}>Open this space ↗</Link></span></div>{previewSpaces.filter(space=>visitedSpaces.includes(space.id)).map(space=><iframe key={space.id} ref={element=>{portalFrames.current[space.id]=element;}} hidden={previewSpace!==space.id} id={`marketing-portal-${space.id}`} className="mk-portal-frame" src={`/portal-preview/index.html?space=${space.id}&view=${space.view}`} title={`${space.label}: interactive Fourthform portal preview`} loading="lazy" onLoad={()=>portalFrames.current[space.id]?.contentWindow?.postMessage({type:'fourthform:preview-view',view:previewViews[space.id]},location.origin)}/>)}</div>
+      <div className="mk-preview-caption"><p>No tour or checklist. Try an edit, follow your curiosity and return when you like. Edits stay on this device. Sending, payments and launch are simulated.</p><Link className="mk-text-link" href={`/preview?view=${previewTask}`}>Explore the complete workspace ↗</Link></div>
     </div></section>
 
     <section className="mk-states" id="states"><div className="mk-states-pin"><div className="mk-container mk-states-grid">
@@ -155,7 +161,7 @@ export default function MarketingHome(){
       <details><summary>How do revision rounds work?<span aria-hidden="true">+</span></summary><p>Collect everything you want changed, then submit those Directions together as one round. Site includes three rounds. First includes one. Saving drafts and sending your Initial Direction use no revision round. Additional rounds are A$150 each.</p></details>
       <details><summary>What is the difference between Site and First?<span aria-hidden="true">+</span></summary><p>Site is A$1,500 for up to 5 custom pages, with A$200 to start and A$1,300 on approval. First is A$199 for one page with around 6 to 7 sections, for businesses opened within the last six months. Both include Core after launch.</p></details>
       <details><summary>What are Core and Pro?<span aria-hidden="true">+</span></summary><p>Core is the included toolkit for content updates, basic analytics, search details and domain management. Pro is optional at A$39 / month for scheduled States, deeper analytics and search insights. You can explore the Pro concept in the preview.</p></details>
-      <details><summary>What can I try in the preview?<span aria-hidden="true">+</span></summary><p>Explore the example website, add feedback, update content and try the analytics and launch journey. Drafts stay on this device and can be exported from Settings. Accounts, team submissions, payments and publishing are simulated, so you can explore without signing up or entering card details.</p></details>
+      <details><summary>What can I try in the preview?<span aria-hidden="true">+</span></summary><p>Choose from four focused spaces for design, content, audience insights and launch. Explore in any order or open the complete workspace. Add feedback, update content and try the analytics and launch journey. Drafts stay on this device and can be exported from Settings. Accounts, team submissions, payments and publishing are simulated, so you can explore without signing up or entering card details.</p></details>
     </div></div></section>
     <footer className="mk-footer"><div className="mk-container"><b>fourthform</b><span>Websites, brought into form.</span><div className="mk-footer-links"><Link href="/work">Work</Link><a href="#pricing">Pricing</a><a href="#questions">Questions</a><Link href="/preview">Try the portal ↗</Link></div><span>Brisbane, Australia</span></div></footer>
   </main>
