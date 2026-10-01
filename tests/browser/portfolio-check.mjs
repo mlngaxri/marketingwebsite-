@@ -46,6 +46,7 @@ await check('Live concepts open inside the gallery and offer a still overview',a
  const frame=page.frameLocator('.work-dialog-media iframe');await frame.locator('h1').waitFor();assert.equal(await frame.locator('h1').textContent(),'Architecture for the way you live.');
  await page.getByRole('button',{name:'Show the design overview',exact:true}).click();await page.locator('.work-dialog-media img').evaluate(image=>image.decode());
  await page.getByRole('button',{name:'Explore the live website',exact:true}).click();await frame.locator('h1').waitFor();
+ await frame.getByRole('link',{name:'Use this direction'}).click();await page.waitForURL('**/preview/start?reference=monolith-hero');assert.ok(await page.locator('.obp-header').isVisible(),'The live concept handoff must leave its embedded frame');
 });
 await check('A chosen design survives the example brief and seeds Initial Direction',async page=>{
  await page.goto(base+'/work?project=oyla');await page.locator('.work-reference').click();await page.locator('.obp-design-reference').waitFor();

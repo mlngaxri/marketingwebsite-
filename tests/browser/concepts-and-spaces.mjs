@@ -33,7 +33,7 @@ await check('Focused portal spaces expose their own navigation and every major f
 });
 await check('Focused saved drafts and preferences cannot change the complete workspace',async p=>{
  await p.goto(`${base}/portal-preview/index.html?space=content`);await p.locator('[data-field="heading"]').fill('Content-space-only heading');await p.locator('[data-ops="save-cms"]').click();await p.reload();assert.equal(await p.locator('[data-field="heading"]').inputValue(),'Content-space-only heading');
- await p.locator('[data-ops="open-site"]').click();await p.locator('[data-view-panel="review"]').waitFor({state:'visible'});assert.equal(await p.locator('#moriPage h1').textContent(),'Content-space-only heading');assert.equal(await p.evaluate(()=>currentMode),'Browse mode');
+ await p.locator('[data-ops="open-site"]').click();await p.locator('[data-view-panel="review"]').waitFor({state:'visible'});assert.equal(await p.locator('#moriPage h1').textContent(),'Content-space-only heading');assert.equal(await p.evaluate(()=>currentMode),'Browse mode');assert.match(await p.locator('.preview-space-heading a').getAttribute('href'),/\?view=review$/);
  await p.goto(`${base}/portal-preview/index.html?view=pages`);assert.equal(await p.locator('[data-field="heading"]').inputValue(),'Dinner, at its own pace.');
  await p.goto(`${base}/portal-preview/index.html?space=design`);await p.evaluate(()=>showView('unknown'));assert.equal(await p.evaluate(()=>currentView),'review');
  await p.goto(`${base}/portal-preview/index.html?space=not-real&view=pages`);assert.equal(await p.locator('html').getAttribute('data-preview-space'),null);await p.locator('[data-view-panel="pages"]').waitFor({state:'visible'});
