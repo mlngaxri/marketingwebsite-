@@ -3,12 +3,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { demoSite } from "../../lib/preview/site";
 
-const stripScript = (html: string) => html.replace(/<script>[\s\S]*<\/script>/, "");
 
 export default function MarketingHome(){
-  const heroSite=useMemo(()=>stripScript(demoSite("/",false)),[]);
-  const monday=useMemo(()=>stripScript(demoSite("/",false,"A table worth\nstaying for.")),[]);
-  const saturday=useMemo(()=>stripScript(demoSite("/",true,"A longer lunch.\nA little more time.")),[]);
+  const heroSite=useMemo(()=>demoSite("/",false),[]);
+  const monday=useMemo(()=>demoSite("/",false,"A table worth\nstaying for."),[]);
+  const saturday=useMemo(()=>demoSite("/",true,"A longer lunch.\nA little more time."),[]);
   const [menuOpen,setMenuOpen]=useState(false);
   const menuButton=useRef<HTMLButtonElement|null>(null);
   const mobileMenu=useRef<HTMLDivElement|null>(null);
